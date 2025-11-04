@@ -364,7 +364,7 @@ function xulyDathang(product) {
         localStorage.setItem("orderDetails",JSON.stringify(orderDetails));
         toast({ title: 'Thành công', message: 'Đặt hàng thành công !', type: 'success', duration: 1000 });
         setTimeout((e)=>{
-            window.location = "/";
+            window.location = "index.html";
         },2000);  
     }
 }
