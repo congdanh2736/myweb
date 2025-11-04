@@ -1,7 +1,7 @@
 function checkLogin() {
     let currentUser = JSON.parse(localStorage.getItem("currentuser"));
     if(currentUser == null || currentUser.userType != 1) {
-        window.location.href = "login.html";
+        window.location.href = "loginadmin.html";
     } else {
         // Có thể hiển thị tên admin nếu cần
         // document.getElementById("name-acc").innerHTML = currentUser.fullname;
@@ -749,7 +749,7 @@ function detailOrder(id) {
                 <span class="detail-order-item-right">${order.hinhthucgiao}</span>
             </li>
             <li class="detail-order-item">
-            <span class="detail-order-item-left"><i class="fa-thin fa-person"></i> Người nhận</span>
+            <span class="detail-order-item-left"><i class="fa-solid fa-person"></i> Người nhận</span>
             <span class="detail-order-item-right">${order.tenguoinhan}</span>
             </li>
             <li class="detail-order-item">
@@ -1036,13 +1036,13 @@ function showUserArr(arr) {
             let tinhtrang = account.status == 0 ? `<span class="status-no-complete">Bị khóa</span>` : `<span class="status-complete">Hoạt động</span>`;
             accountHtml += ` <tr>
             <td>${index + 1}</td>
-            <td>${account.fullname}</td>
+            <td>${account.fullname}${account.userType == 1 ? ' (Admin)' : ''}</td>
             <td>${account.phone}</td>
             <td>${formatDate(account.join)}</td>
             <td>${tinhtrang}</td>
             <td class="control control-table">
             <button class="btn-edit" id="edit-account" onclick='editAccount(${account.phone})' ><i class="fas fa-pen-to-square"></i></button>
-            <button class="btn-delete" id="delete-account" onclick="deleteAcount(${index})"><i class="fa-solid fa-trash"></i></button>
+            <button class="btn-delete" id="delete-account" onclick="deleteAcount('${account.phone}')"><i class="fa-solid fa-trash"></i></button>
             </td>
         </tr>`
         })
@@ -1061,7 +1061,7 @@ function showUser() {
         return;
     }
 
-    let accounts = localStorage.getItem("accounts") ? JSON.parse(localStorage.getItem("accounts")).filter(item => item.userType == 0) : [];
+    let accounts = localStorage.getItem("accounts") ? JSON.parse(localStorage.getItem("accounts")) : [];
     let result = tinhTrang == 2 ? accounts : accounts.filter(item => item.status == tinhTrang);
 
     result = ct == "" ? result : result.filter((item) => {
@@ -1082,11 +1082,31 @@ function showUser() {
             );
         });
     }
+
+    // Sắp xếp: Admin trước, theo thứ tự chữ cái
+    result.sort((a, b) => {
+        // Admin (userType == 1) lên trước
+        if (a.userType === 1 && b.userType !== 1) return -1;
+        if (a.userType !== 1 && b.userType === 1) return 1;
+        
+        // Cùng loại thì sắp xếp theo tên
+        return a.fullname.localeCompare(b.fullname);
+    });
+
     showUserArr(result);
 }
 
 function cancelSearchUser() {
-    let accounts = localStorage.getItem("accounts") ? JSON.parse(localStorage.getItem("accounts")).filter(item => item.userType == 0) : [];
+    let accounts = localStorage.getItem("accounts") ? JSON.parse(localStorage.getItem("accounts")) : [];
+    // Sắp xếp: Admin trước, theo thứ tự chữ cái
+    accounts.sort((a, b) => {
+        // Admin (userType == 1) lên trước
+        if (a.userType === 1 && b.userType !== 1) return -1;
+        if (a.userType !== 1 && b.userType === 1) return 1;
+        
+        // Cùng loại thì sắp xếp theo tên
+        return a.fullname.localeCompare(b.fullname);
+    });
     showUserArr(accounts);
     document.getElementById("tinh-trang-user").value = 2;
     document.getElementById("form-search-user").value = "";
@@ -1123,6 +1143,7 @@ function editAccount(phone) {
     document.getElementById("fullname").value = accounts[index].fullname;
     document.getElementById("phone").value = accounts[index].phone;
     document.getElementById("password").value = accounts[index].password;
+    document.getElementById("user-role").value = accounts[index].userType;
     document.getElementById("user-status").checked = accounts[index].status == 1 ? true : false;
 }
 
@@ -1138,6 +1159,7 @@ updateAccount.addEventListener("click", (e) => {
         accounts[indexFlag].fullname = document.getElementById("fullname").value;
         accounts[indexFlag].phone = document.getElementById("phone").value;
         accounts[indexFlag].password = document.getElementById("password").value;
+        accounts[indexFlag].userType = parseInt(document.getElementById("user-role").value);
         accounts[indexFlag].status = document.getElementById("user-status").checked ? true : false;
         localStorage.setItem("accounts", JSON.stringify(accounts));
         toast({ title: 'Thành công', message: 'Thay đổi thông tin thành công !', type: 'success', duration: 3000 });
@@ -1190,7 +1212,7 @@ addAccount.addEventListener("click", (e) => {
             status: 1,
             join: new Date(),
             cart: [],
-            userType: 0
+            userType: parseInt(document.getElementById("user-role").value)
         }
         console.log(user);
         let accounts = localStorage.getItem('accounts') ? JSON.parse(localStorage.getItem('accounts')) : [];
@@ -1213,7 +1235,8 @@ addAccount.addEventListener("click", (e) => {
 document.getElementById("logout-acc").addEventListener('click', (e) => {
     e.preventDefault();
     localStorage.removeItem("currentuser");
-    window.location.href = "login.html";
+    // Redirect to admin-specific login page after logout
+    window.location.href = "loginadmin.html";
 })
 
 // Thêm chức năng Thể loại (Category)

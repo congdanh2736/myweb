@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập Admin - Mì Cay 7749</title>
+    <link href='./assets/img/micay7749.png' rel='icon' type='image/x-icon' />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('./assets/img/admin/background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-container h2 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .login-container .logo {
+            margin-bottom: 15px;
+        }
+
+        .login-container .logo img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #B5292F;
+            box-shadow: 0 0 0 3px rgba(185, 41, 47, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #B5292F 0%, #ff6b35 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 0px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(185, 41, 47, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #login-error {
+            color: #e74c3c;
+            margin-top: 15px;
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        .back-link {
+            margin-top: 20px;
+            color: #B5292F;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <img src="./assets/img/micay7749.png" alt="Mì Cay 7749 Logo">
+        </div>
+        <h2>Đăng nhập Admin</h2>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="login-phone">Số điện thoại:</label>
+                <input type="text" id="login-phone" name="phone" class="form-control" required placeholder="Nhập số điện thoại">
+            </div>
+            <div class="form-group">
+                <label for="login-password">Mật khẩu:</label>
+                <input type="password" id="login-password" name="password" class="form-control" required placeholder="Nhập mật khẩu">
+            </div>
+            <button type="submit" class="login-btn">Đăng nhập</button>
+        </form>
+        <div id="login-error"></div>
+        <a href="index.html" class="back-link">← Quay lại trang chủ</a>
+    </div>
+
+    <script>
+        // Kiểm tra nếu đã đăng nhập thì chuyển về admin
+        window.onload = function() {
+            let currentUser = JSON.parse(localStorage.getItem("currentuser"));
+            if (currentUser && currentUser.userType == 1) {
+                window.location.href = "admin.html";
+            }
+        };
+
+        // Xử lý form đăng nhập
+        document.getElementById("login-form").addEventListener("submit", function(e) {
+            e.preventDefault();
+            
+            let phone = document.getElementById("login-phone").value.trim();
+            let password = document.getElementById("login-password").value;
+            let errorDiv = document.getElementById("login-error");
+            let loginBtn = document.querySelector(".login-btn");
+            
+            errorDiv.textContent = "";
+            
+            // Basic validation
+            if (phone.length !== 10 || !/^\d+$/.test(phone)) {
+                errorDiv.textContent = "Số điện thoại phải có 10 chữ số!";
+                return;
+            }
+            if (password.length < 6) {
+                errorDiv.textContent = "Mật khẩu phải có ít nhất 6 ký tự!";
+                return;
+            }
+            
+            // Disable button to prevent double submit
+            loginBtn.disabled = true;
+            loginBtn.textContent = "Đang đăng nhập...";
+            
+            // Lấy danh sách tài khoản
+            let accounts = JSON.parse(localStorage.getItem("accounts")) || [];
+            
+            // Tìm tài khoản khớp
+            let user = accounts.find(acc => acc.phone === phone && acc.password === password);
+            
+            if (user && user.userType == 1) {
+                // Đăng nhập thành công
+                localStorage.setItem("currentuser", JSON.stringify(user));
+                window.location.href = "admin.html";
+            } else {
+                // Đăng nhập thất bại
+                errorDiv.textContent = "Số điện thoại hoặc mật khẩu không đúng, hoặc bạn không phải admin!";
+                loginBtn.disabled = false;
+                loginBtn.textContent = "Đăng nhập";
+            }
+        });
+    </script>
+</body>
+</html>

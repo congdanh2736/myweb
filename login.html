@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập Admin - Mì Cay 7749</title>
+    <title>Đăng nhập / Đăng ký - Mì Cay 7749</title>
     <link href='./assets/img/micay7749.png' rel='icon' type='image/x-icon' />
     <style>
         * {
@@ -25,7 +25,7 @@
 
         .login-container {
             background: rgba(255, 255, 255, 0.95);
-            padding: 40px;
+            padding: 25px;
             border-radius: 15px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
             width: 100%;
@@ -46,10 +46,30 @@
         }
 
         .login-container h2 {
-            margin-bottom: 30px;
+            margin-bottom: 15px;
             color: #333;
             font-size: 28px;
             font-weight: 600;
+        }
+
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: #ddd;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #B5292F;
+            color: white;
         }
 
         .login-container .logo {
@@ -63,7 +83,7 @@
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             text-align: left;
         }
 
@@ -92,7 +112,7 @@
 
         .login-btn {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             background: linear-gradient(135deg, #B5292F 0%, #ff6b35 100%);
             color: white;
             border: none;
@@ -101,7 +121,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: transform 0.2s;
-            margin-top: 10px;
+            margin-top: 0px;
         }
 
         .login-btn:hover {
@@ -137,7 +157,11 @@
         <div class="logo">
             <img src="./assets/img/micay7749.png" alt="Mì Cay 7749 Logo">
         </div>
-        <h2>Đăng nhập Admin</h2>
+        <h2>Mì cay 7749</h2>
+        <div class="tab-buttons">
+            <button id="login-tab" class="tab-btn active">Đăng nhập</button>
+            <button id="signup-tab" class="tab-btn">Đăng ký</button>
+        </div>
         <form id="login-form">
             <div class="form-group">
                 <label for="login-phone">Số điện thoại:</label>
@@ -149,18 +173,60 @@
             </div>
             <button type="submit" class="login-btn">Đăng nhập</button>
         </form>
+        <form id="signup-form" style="display: none;">
+            <div class="form-group">
+                <label for="signup-fullname">Tên đầy đủ:</label>
+                <input type="text" id="signup-fullname" name="fullname" class="form-control" required placeholder="VD: Nguyễn Văn A">
+            </div>
+            <div class="form-group">
+                <label for="signup-phone">Số điện thoại:</label>
+                <input type="text" id="signup-phone" name="phone" class="form-control" required placeholder="Nhập số điện thoại">
+            </div>
+            <div class="form-group">
+                <label for="signup-password">Mật khẩu:</label>
+                <input type="password" id="signup-password" name="password" class="form-control" required placeholder="Nhập mật khẩu">
+            </div>
+            <div class="form-group">
+                <label for="signup-password-confirm">Nhập lại mật khẩu:</label>
+                <input type="password" id="signup-password-confirm" name="password_confirm" class="form-control" required placeholder="Nhập lại mật khẩu">
+            </div>
+            <div class="form-group">
+                <input class="checkbox" name="checkbox" required="" type="checkbox" id="checkbox-signup">
+                <label for="checkbox-signup" class="form-checkbox">Tôi đồng ý với <a href="#" title="chính sách trang web" target="_blank"> chính sách trang web </a></label>
+            </div>
+            <button type="submit" class="login-btn">Đăng ký</button>
+        </form>
         <div id="login-error"></div>
         <a href="index.html" class="back-link">← Quay lại trang chủ</a>
     </div>
 
     <script>
-        // Kiểm tra nếu đã đăng nhập thì chuyển về admin
+        // Kiểm tra nếu đã đăng nhập thì chuyển về trang tương ứng
         window.onload = function() {
             let currentUser = JSON.parse(localStorage.getItem("currentuser"));
-            if (currentUser && currentUser.userType == 1) {
-                window.location.href = "admin.html";
+            if (currentUser) {
+                if (currentUser.userType == 1) {
+                    window.location.href = "admin.html";
+                } else {
+                    window.location.href = "index.html";
+                }
             }
         };
+
+        // Tab switching
+        document.getElementById('login-tab').addEventListener('click', function() {
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('signup-form').style.display = 'none';
+            this.classList.add('active');
+            document.getElementById('signup-tab').classList.remove('active');
+        });
+
+        document.getElementById('signup-tab').addEventListener('click', function() {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('signup-form').style.display = 'block';
+            this.classList.add('active');
+            document.getElementById('login-tab').classList.remove('active');
+        });
 
         // Xử lý form đăng nhập
         document.getElementById("login-form").addEventListener("submit", function(e) {
@@ -182,10 +248,80 @@
                 // Đăng nhập thành công
                 localStorage.setItem("currentuser", JSON.stringify(user));
                 window.location.href = "admin.html";
+            } else if (user && user.userType == 0) {
+                // Đăng nhập thành công user thường
+                localStorage.setItem("currentuser", JSON.stringify(user));
+                window.location.href = "index.html";
             } else {
                 // Đăng nhập thất bại
-                errorDiv.textContent = "Số điện thoại hoặc mật khẩu không đúng, hoặc bạn không phải admin!";
+                errorDiv.textContent = "Số điện thoại hoặc mật khẩu không đúng!";
             }
+        });
+
+        // Xử lý form đăng ký
+        document.getElementById("signup-form").addEventListener("submit", function(e) {
+            e.preventDefault();
+            
+            let fullname = document.getElementById("signup-fullname").value.trim();
+            let phone = document.getElementById("signup-phone").value.trim();
+            let password = document.getElementById("signup-password").value;
+            let passwordConfirm = document.getElementById("signup-password-confirm").value;
+            let checkbox = document.getElementById("checkbox-signup").checked;
+            let errorDiv = document.getElementById("login-error");
+            
+            errorDiv.textContent = "";
+            
+            // Validation
+            if (fullname.length < 3) {
+                errorDiv.textContent = "Tên đầy đủ phải có ít nhất 3 ký tự!";
+                return;
+            }
+            if (phone.length !== 10 || !/^\d+$/.test(phone)) {
+                errorDiv.textContent = "Số điện thoại phải có 10 chữ số!";
+                return;
+            }
+            if (password.length < 6) {
+                errorDiv.textContent = "Mật khẩu phải có ít nhất 6 ký tự!";
+                return;
+            }
+            if (password !== passwordConfirm) {
+                errorDiv.textContent = "Mật khẩu xác nhận không khớp!";
+                return;
+            }
+            if (!checkbox) {
+                errorDiv.textContent = "Bạn phải đồng ý với chính sách trang web!";
+                return;
+            }
+            
+            // Lấy danh sách tài khoản
+            let accounts = JSON.parse(localStorage.getItem("accounts")) || [];
+            
+            // Kiểm tra trùng lặp
+            let existingUser = accounts.find(acc => acc.phone === phone);
+            if (existingUser) {
+                errorDiv.textContent = "Số điện thoại đã được đăng ký!";
+                return;
+            }
+            
+            // Tạo tài khoản mới
+            let newUser = {
+                fullname: fullname,
+                phone: phone,
+                password: password,
+                address: '',
+                email: '',
+                status: 1,
+                join: new Date(),
+                cart: [],
+                userType: 0 // User thường
+            };
+            
+            accounts.push(newUser);
+            localStorage.setItem("accounts", JSON.stringify(accounts));
+            localStorage.setItem("currentuser", JSON.stringify(newUser));
+            
+            // Chuyển đến trang chủ
+            window.location.href = "index.html";
         });
     </script>
 </body>

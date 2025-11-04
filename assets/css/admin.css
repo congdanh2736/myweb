@@ -538,6 +538,7 @@ body,input,button,textarea,pre {
     background: rgba(30,30,30,0.7);
     position: relative;
     color: #fff;
+    background-image: url("../img/admin/background.jpg");
 }
 
 .section.active {
@@ -674,8 +675,8 @@ thead td {
     font-size: 16px;
     text-transform: uppercase;
     font-weight: 500;
-    background: rgba(255, 191, 71, 0.2);
-    color: #ffe066;
+    background: var(--red);
+    color: var(--more-yellow);
     padding: 15px;
     text-align: center;
     white-space: nowrap;
@@ -971,6 +972,23 @@ tbody tr td {
     border-radius: 5px;
     outline: none;
     transition: border 0.3s linear;
+}
+
+select.form-control {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 5px;
+    padding: 8px 12px;
+    margin-left: 0;
+    border-right: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 16px;
+    padding-right: 35px;
 }
 
 .product-desc {
@@ -1796,6 +1814,7 @@ label a {
 
 /* Modal Kiểm tra theo ngày */
 .modal.check-daily .modal-container {
+    margin-top: 40px;
     padding: 40px;
     max-width: 1000px;
 }
