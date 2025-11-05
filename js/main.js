@@ -987,6 +987,34 @@ function formatDate(date) {
     return dd + '/' + mm + '/' + yyyy;
 }
 
+// Kiểm tra số điện thoại hợp lệ
+function validatePhoneNumber(phone) {
+    // Regex kiểm tra số điện thoại Việt Nam
+    const phoneRegex = /^(0[0-9]{9})$/;
+    
+    if (!phone) {
+        toast({
+            title: 'Lỗi',
+            message: 'Vui lòng nhập số điện thoại!',
+            type: 'error',
+            duration: 3000
+        });
+        return false;
+    }
+
+    if (!phoneRegex.test(phone)) {
+        toast({
+            title: 'Lỗi',
+            message: 'Số điện thoại không hợp lệ! Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0',
+            type: 'error',
+            duration: 3000
+        });
+        return false;
+    }
+
+    return true;
+}
+
 // Xem chi tiet don hang
 function detailOrder(id) {
     let order = JSON.parse(localStorage.getItem("order"));

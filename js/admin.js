@@ -1155,6 +1155,8 @@ updateAccount.addEventListener("click", (e) => {
     let password = document.getElementById("password").value;
     if(fullname == "" || phone == "" || password == "") {
         toast({ title: 'Chú ý', message: 'Vui lòng nhập đầy đủ thông tin !', type: 'warning', duration: 3000 });
+    } else if (!validatePhoneNumber(phone)) {
+        return;
     } else {
         accounts[indexFlag].fullname = document.getElementById("fullname").value;
         accounts[indexFlag].phone = document.getElementById("phone").value;
@@ -1186,6 +1188,9 @@ addAccount.addEventListener("click", (e) => {
         } else if (fullNameUser.length < 3) {
             fullNameIP.value = '';
             formMessageName.innerHTML = 'Vui lòng nhập họ và tên lớn hơn 3 kí tự';
+        } else if (!validatePhoneNumber(phoneUser)) {
+            formMessagePhone.innerHTML = 'Số điện thoại không hợp lệ';
+            return;
         }
         
         if (phoneUser.length == 0) {
