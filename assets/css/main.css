@@ -1271,12 +1271,12 @@ button.prev:hover, button.next:hover {
 }
 
 .modal-close {
-    background-color: rgb(0 0 0 / 40%);
+    background-color: rgb(0 0 0);
     height: 50px;
     width: 50px;
     border-radius: 50%;
-    font-size: 28px;
-    color: var(--red);
+    font-size: 20px;
+    color: var(--more-yellow);
     border: 0;
     position: absolute;
     top: 20px;
