@@ -29,9 +29,10 @@
             border-radius: 15px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
             width: 100%;
-            max-width: 400px;
+            max-width: 500px;
             text-align: center;
             animation: slideIn 0.5s ease-out;
+        
         }
 
         @keyframes slideIn {
@@ -80,6 +81,15 @@
             width: 80px;
             height: 80px;
             border-radius: 50%;
+        }
+
+        .form-list {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .form-list .two-form-group {
+            margin: 25px;
         }
 
         .form-group {
@@ -138,6 +148,15 @@
             margin-top: 15px;
             font-size: 14px;
             min-height: 20px;
+            background: #ffe6e6;
+            padding: 8px 12px;
+            border-radius: 5px;
+            border-left: 3px solid #e74c3c;
+            display: none;
+        }
+
+        #login-error:not(:empty) {
+            display: block;
         }
 
         .back-link {
@@ -145,6 +164,15 @@
             color: #B5292F;
             text-decoration: none;
             font-size: 14px;
+        }
+        
+        /* Style cho input invalid */
+        .form-control:invalid:not(:placeholder-shown) {
+            border-color: #e74c3c;
+        }
+        
+        .form-control:valid:not(:placeholder-shown) {
+            border-color: #27ae60;
         }
 
         .back-link:hover {
@@ -165,30 +193,60 @@
         <form id="login-form">
             <div class="form-group">
                 <label for="login-phone">Số điện thoại:</label>
-                <input type="text" id="login-phone" name="phone" class="form-control" required placeholder="Nhập số điện thoại">
+                <input type="tel" id="login-phone" name="phone" class="form-control" required 
+                       placeholder="Nhập số điện thoại" 
+                       pattern="[0-9]{10}" 
+                       maxlength="10"
+                       title="Số điện thoại phải có đúng 10 chữ số">
             </div>
             <div class="form-group">
                 <label for="login-password">Mật khẩu:</label>
-                <input type="password" id="login-password" name="password" class="form-control" required placeholder="Nhập mật khẩu">
+                <input type="password" id="login-password" name="password" class="form-control" required 
+                       placeholder="Nhập mật khẩu"
+                       minlength="6"
+                       maxlength="32"
+                       title="Mật khẩu phải có ít nhất 6 ký tự">
             </div>
             <button type="submit" class="login-btn">Đăng nhập</button>
         </form>
         <form id="signup-form" style="display: none;">
-            <div class="form-group">
-                <label for="signup-fullname">Tên đầy đủ:</label>
-                <input type="text" id="signup-fullname" name="fullname" class="form-control" required placeholder="VD: Nguyễn Văn A">
-            </div>
-            <div class="form-group">
-                <label for="signup-phone">Số điện thoại:</label>
-                <input type="text" id="signup-phone" name="phone" class="form-control" required placeholder="Nhập số điện thoại">
-            </div>
-            <div class="form-group">
-                <label for="signup-password">Mật khẩu:</label>
-                <input type="password" id="signup-password" name="password" class="form-control" required placeholder="Nhập mật khẩu">
-            </div>
-            <div class="form-group">
-                <label for="signup-password-confirm">Nhập lại mật khẩu:</label>
-                <input type="password" id="signup-password-confirm" name="password_confirm" class="form-control" required placeholder="Nhập lại mật khẩu">
+            <div class="form-list">  
+                <div class="two-form-group">
+                    <div class="form-group">
+                        <label for="signup-fullname">Tên đầy đủ:</label>
+                        <input type="text" id="signup-fullname" name="fullname" class="form-control" required 
+                               placeholder="VD: Nguyễn Văn A"
+                               minlength="3"
+                               maxlength="50"
+                               title="Họ tên phải có từ 3-50 ký tự">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-phone">Số điện thoại:</label>
+                        <input type="tel" id="signup-phone" name="phone" class="form-control" required 
+                               placeholder="Nhập số điện thoại (10 số)"
+                               pattern="0[0-9]{9}"
+                               maxlength="10"
+                               title="Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0">
+                    </div>
+                </div>
+                <div class="two-form-group">
+                    <div class="form-group">
+                        <label for="signup-password">Mật khẩu:</label>
+                        <input type="password" id="signup-password" name="password" class="form-control" required 
+                               placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)"
+                               minlength="6"
+                               maxlength="32"
+                               title="Mật khẩu phải có từ 6-32 ký tự, không có khoảng trắng">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password-confirm">Nhập lại mật khẩu:</label>
+                        <input type="password" id="signup-password-confirm" name="password_confirm" class="form-control" required 
+                               placeholder="Nhập lại mật khẩu"
+                               minlength="6"
+                               maxlength="32"
+                               title="Nhập lại mật khẩu giống với mật khẩu đã nhập">
+                    </div>
+                </div> 
             </div>
             <div class="form-group">
                 <input class="checkbox" name="checkbox" required="" type="checkbox" id="checkbox-signup">
@@ -238,17 +296,36 @@
             
             errorDiv.textContent = "";
             
+            // Validation đăng nhập
+            if (!phone) {
+                errorDiv.textContent = "Vui lòng nhập số điện thoại!";
+                return;
+            }
+            if (phone.length !== 10 || !/^\d{10}$/.test(phone)) {
+                errorDiv.textContent = "Số điện thoại phải có đúng 10 chữ số!";
+                return;
+            }
+            if (!password) {
+                errorDiv.textContent = "Vui lòng nhập mật khẩu!";
+                return;
+            }
+            if (password.length < 6) {
+                errorDiv.textContent = "Mật khẩu phải có ít nhất 6 ký tự!";
+                return;
+            }
+            
             // Lấy danh sách tài khoản
             let accounts = JSON.parse(localStorage.getItem("accounts")) || [];
             
             // Tìm tài khoản khớp
             let user = accounts.find(acc => acc.phone === phone && acc.password === password);
             
-            if (user && user.userType == 1) {
-                // Đăng nhập thành công
-                localStorage.setItem("currentuser", JSON.stringify(user));
-                window.location.href = "admin.html";
-            } else if (user && user.userType == 0) {
+            if (user && (user.userType == 1 || user.userType === "1")) {
+                // Không cho phép đăng nhập admin từ trang này
+                errorDiv.textContent = "Tài khoản hoặc mật khẩu sai!";
+                errorDiv.style.color = "#ff6b35";
+                return;
+            } else if (user && (user.userType == 0 || user.userType === "0")) {
                 // Đăng nhập thành công user thường
                 localStorage.setItem("currentuser", JSON.stringify(user));
                 window.location.href = "index.html";
@@ -271,23 +348,72 @@
             
             errorDiv.textContent = "";
             
-            // Validation
-            if (fullname.length < 3) {
-                errorDiv.textContent = "Tên đầy đủ phải có ít nhất 3 ký tự!";
+            // Validation chi tiết
+            // 1. Kiểm tra họ tên
+            if (!fullname) {
+                errorDiv.textContent = "Vui lòng nhập họ tên!";
                 return;
             }
-            if (phone.length !== 10 || !/^\d+$/.test(phone)) {
-                errorDiv.textContent = "Số điện thoại phải có 10 chữ số!";
+            if (fullname.length < 3) {
+                errorDiv.textContent = "Họ tên phải có ít nhất 3 ký tự!";
+                return;
+            }
+            if (fullname.length > 50) {
+                errorDiv.textContent = "Họ tên không được vượt quá 50 ký tự!";
+                return;
+            }
+            if (!/^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵýỷỹ\s]+$/.test(fullname)) {
+                errorDiv.textContent = "Họ tên chỉ được chứa chữ cái và khoảng trắng!";
+                return;
+            }
+            
+            // 2. Kiểm tra số điện thoại
+            if (!phone) {
+                errorDiv.textContent = "Vui lòng nhập số điện thoại!";
+                return;
+            }
+            if (phone.length !== 10) {
+                errorDiv.textContent = "Số điện thoại phải có đúng 10 chữ số!";
+                return;
+            }
+            if (!/^\d{10}$/.test(phone)) {
+                errorDiv.textContent = "Số điện thoại chỉ được chứa chữ số!";
+                return;
+            }
+            if (!phone.startsWith('0')) {
+                errorDiv.textContent = "Số điện thoại phải bắt đầu bằng số 0!";
+                return;
+            }
+            
+            // 3. Kiểm tra mật khẩu
+            if (!password) {
+                errorDiv.textContent = "Vui lòng nhập mật khẩu!";
                 return;
             }
             if (password.length < 6) {
                 errorDiv.textContent = "Mật khẩu phải có ít nhất 6 ký tự!";
                 return;
             }
+            if (password.length > 32) {
+                errorDiv.textContent = "Mật khẩu không được vượt quá 32 ký tự!";
+                return;
+            }
+            if (password.includes(' ')) {
+                errorDiv.textContent = "Mật khẩu không được chứa khoảng trắng!";
+                return;
+            }
+            
+            // 4. Kiểm tra xác nhận mật khẩu
+            if (!passwordConfirm) {
+                errorDiv.textContent = "Vui lòng xác nhận mật khẩu!";
+                return;
+            }
             if (password !== passwordConfirm) {
                 errorDiv.textContent = "Mật khẩu xác nhận không khớp!";
                 return;
             }
+            
+            // 5. Kiểm tra checkbox chính sách
             if (!checkbox) {
                 errorDiv.textContent = "Bạn phải đồng ý với chính sách trang web!";
                 return;
@@ -320,8 +446,64 @@
             localStorage.setItem("accounts", JSON.stringify(accounts));
             localStorage.setItem("currentuser", JSON.stringify(newUser));
             
-            // Chuyển đến trang chủ
-            window.location.href = "index.html";
+            // Hiển thị thông báo thành công
+            errorDiv.style.color = "#27ae60";
+            errorDiv.style.background = "#e6ffe6";
+            errorDiv.style.borderLeft = "3px solid #27ae60";
+            errorDiv.textContent = "Đăng ký thành công! Đang chuyển hướng...";
+            
+            // Chuyển đến trang chủ sau 1 giây
+            setTimeout(function() {
+                window.location.href = "index.html";
+            }, 1000);
+        });
+
+        // Thêm event listener để kiểm tra số điện thoại khi nhập
+        document.getElementById("signup-phone").addEventListener("input", function(e) {
+            // Chỉ cho phép nhập số
+            this.value = this.value.replace(/[^0-9]/g, '');
+            // Giới hạn 10 số
+            if (this.value.length > 10) {
+                this.value = this.value.slice(0, 10);
+            }
+        });
+
+        document.getElementById("login-phone").addEventListener("input", function(e) {
+            // Chỉ cho phép nhập số
+            this.value = this.value.replace(/[^0-9]/g, '');
+            // Giới hạn 10 số
+            if (this.value.length > 10) {
+                this.value = this.value.slice(0, 10);
+            }
+        });
+
+        // Xóa thông báo lỗi khi người dùng bắt đầu nhập
+        document.querySelectorAll('.form-control').forEach(function(input) {
+            input.addEventListener("input", function() {
+                let errorDiv = document.getElementById("login-error");
+                errorDiv.textContent = "";
+            });
+        });
+
+        // Kiểm tra khớp mật khẩu real-time
+        document.getElementById("signup-password-confirm").addEventListener("input", function() {
+            let password = document.getElementById("signup-password").value;
+            let confirmPassword = this.value;
+            let errorDiv = document.getElementById("login-error");
+            
+            if (confirmPassword && password !== confirmPassword) {
+                errorDiv.style.color = "#e74c3c";
+                errorDiv.style.background = "#ffe6e6";
+                errorDiv.style.borderLeft = "3px solid #e74c3c";
+                errorDiv.textContent = "Mật khẩu xác nhận chưa khớp!";
+            } else if (confirmPassword && password === confirmPassword) {
+                errorDiv.style.color = "#27ae60";
+                errorDiv.style.background = "#e6ffe6";
+                errorDiv.style.borderLeft = "3px solid #27ae60";
+                errorDiv.textContent = "Mật khẩu khớp!";
+            } else {
+                errorDiv.textContent = "";
+            }
         });
     </script>
 </body>

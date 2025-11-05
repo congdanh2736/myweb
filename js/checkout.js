@@ -2,6 +2,17 @@ const PHIVANCHUYEN = 30000;
 let priceFinal = document.getElementById("checkout-cart-price-final");
 // Trang thanh toan
 function thanhtoanpage(option,product) {
+    // Tự động điền tên người dùng và số điện thoại
+    let currentUser = JSON.parse(localStorage.getItem('currentuser'));
+    if (currentUser) {
+        if (currentUser.fullname) {
+            document.querySelector("#tennguoinhan").value = currentUser.fullname;
+        }
+        if (currentUser.phone) {
+            document.querySelector("#sdtnhan").value = currentUser.phone;
+        }
+    }
+    
     // Xu ly ngay nhan hang
     
     let today = new Date();
@@ -162,7 +173,7 @@ function showProductCart() {
     currentuser.cart.forEach(item => {
         let product = getProduct(item);
         listOrderHtml += `<div class="food-total">
-        <div class="count">${product.soluong}x</div>
+        <div class="count">${item.soluong}x</div>
         <div class="info-food">
             <div class="name-food">${product.title}</div>
         </div>
@@ -204,32 +215,54 @@ function dathangngay() {
             let soluongMua = parseInt(productInfo.querySelector(".buttons_added .input-qty").value);
             let notevalue = productInfo.querySelector("#popup-detail-note").value;
             let ghichu = notevalue == "" ? "Không có ghi chú" : notevalue;
+            
+            // Validation số lượng
+            if (isNaN(soluongMua) || soluongMua < 1) {
+                toast({ title: 'Lỗi', message: 'Số lượng phải lớn hơn 0!', type: 'error', duration: 3000 });
+                return;
+            }
+            
             let products = JSON.parse(localStorage.getItem('products'));
             let a = products.find(item => item.id == productId);
-            // a.soluong = parseInt(soluong);
-            // a.note = ghichu;
-            // checkoutpage.classList.add('active');
-            // thanhtoanpage(2,a);
-            // closeCart();
-            // body.style.overflow = "hidden"
             if (a) {
-                // Trừ số lượng tồn kho
-                if (a.soluong >= soluongMua) {
-                    // a.soluong -= soluongMua;   // cập nhật tồn kho
-                    a.note = ghichu;
-
-                    // Lưu lại vào localStorage
-                    // localStorage.setItem('products', JSON.stringify(products));
-
-                    a.soluong = soluongMua;
-                    // Tiếp tục xử lý thanh toán
-                    checkoutpage.classList.add('active');
-                    thanhtoanpage(2, a);
-                    closeCart();
-                    body.style.overflow = "hidden";
-                } else {
-                    toast({ title: 'Error', message: 'Sản phẩm không đủ số lượng tồn kho!', type: 'error', duration: 3000 });
+                // Tính tồn kho thực tế
+                // Tồn kho = Số lượng ban đầu - Đơn đã hoàn thành - Đơn đang chờ xử lý
+                let orders = localStorage.getItem("order") ? JSON.parse(localStorage.getItem("order")) : [];
+                let orderDetails = localStorage.getItem("orderDetails") ? JSON.parse(localStorage.getItem("orderDetails")) : [];
+                let completedQty = 0; // Đơn đã hoàn thành
+                let pendingQty = 0;   // Đơn đang chờ xử lý
+                
+                orders.forEach(order => {
+                    orderDetails.forEach(detail => {
+                        if (detail.madon == order.id && detail.id == a.id) {
+                            if (order.trangthai == 1) {
+                                completedQty += parseInt(detail.soluong);
+                            } else if (order.trangthai == 0) {
+                                pendingQty += parseInt(detail.soluong);
+                            }
+                        }
+                    });
+                });
+                
+                let stockQty = parseInt(a.soluong) - completedQty - pendingQty;
+                
+                if (soluongMua > stockQty) {
+                    toast({ title: 'Lỗi', message: 'Số lượng vượt quá tồn kho khả dụng (' + stockQty + ' sản phẩm)!', type: 'error', duration: 3000 });
+                    return;
                 }
+                
+                // Tạo object sản phẩm với số lượng đã chọn
+                let productToOrder = {
+                    ...a,
+                    soluong: soluongMua,
+                    note: ghichu
+                };
+
+                // Tiếp tục xử lý thanh toán
+                checkoutpage.classList.add('active');
+                thanhtoanpage(2, productToOrder);
+                closeCart();
+                body.style.overflow = "hidden";
             }
         } else {
             toast({ title: 'Warning', message: 'Chưa đăng nhập tài khoản !', type: 'warning', duration: 3000 });
@@ -331,14 +364,42 @@ function xulyDathang(product) {
         orderDetails.push(product);
     }   
     
-    let tennguoinhan = document.querySelector("#tennguoinhan").value;
-    let sdtnhan = document.querySelector("#sdtnhan").value
+    let tennguoinhan = document.querySelector("#tennguoinhan").value.trim();
+    let sdtnhan = document.querySelector("#sdtnhan").value.trim();
 
     console.log({ tennguoinhan, sdtnhan, diachinhan, thoigiangiao });
 
+    // Validation chi tiết
     if(tennguoinhan == "" || sdtnhan == "" || diachinhan == "") {
         toast({ title: 'Chú ý', message: 'Vui lòng nhập đầy đủ thông tin !', type: 'warning', duration: 4000 });
-    } else {
+        return;
+    }
+    
+    // Kiểm tra tên người nhận
+    if(tennguoinhan.length < 3 || tennguoinhan.length > 50) {
+        toast({ title: 'Lỗi', message: 'Tên người nhận phải từ 3-50 ký tự!', type: 'error', duration: 4000 });
+        return;
+    }
+    
+    if(!/^[A-Za-zÀ-ỹ\s]+$/.test(tennguoinhan)) {
+        toast({ title: 'Lỗi', message: 'Tên người nhận chỉ được chứa chữ cái!', type: 'error', duration: 4000 });
+        return;
+    }
+    
+    // Kiểm tra số điện thoại
+    if(!/^0[0-9]{9}$/.test(sdtnhan)) {
+        toast({ title: 'Lỗi', message: 'Số điện thoại phải có 10 số và bắt đầu bằng số 0!', type: 'error', duration: 4000 });
+        return;
+    }
+    
+    // Kiểm tra địa chỉ
+    if(diachinhan.length < 10 || diachinhan.length > 200) {
+        toast({ title: 'Lỗi', message: 'Địa chỉ nhận hàng phải từ 10-200 ký tự!', type: 'error', duration: 4000 });
+        return;
+    }
+    
+    // Nếu tất cả validation đều pass
+    {
         let donhang = {
             id: madon,
             khachhang: currentUser.phone,
@@ -364,7 +425,7 @@ function xulyDathang(product) {
         localStorage.setItem("orderDetails",JSON.stringify(orderDetails));
         toast({ title: 'Thành công', message: 'Đặt hàng thành công !', type: 'success', duration: 1000 });
         setTimeout((e)=>{
-            window.location = "index.html";
+            window.location = "/";
         },2000);  
     }
 }
@@ -376,3 +437,37 @@ function getpriceProduct(id) {
     })
     return sp.price;
 }
+
+// Validation real-time cho form đặt hàng
+document.addEventListener('DOMContentLoaded', function() {
+    // Chỉ cho phép nhập số cho số điện thoại nhận hàng
+    const sdtnhanInput = document.querySelector("#sdtnhan");
+    if (sdtnhanInput) {
+        sdtnhanInput.addEventListener("input", function(e) {
+            // Chỉ giữ lại số
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            // Giới hạn 10 số
+            if (this.value.length > 10) {
+                this.value = this.value.slice(0, 10);
+            }
+        });
+    }
+    
+    // Chỉ cho phép nhập chữ cái cho tên người nhận
+    const tennguoinhanInput = document.querySelector("#tennguoinhan");
+    if (tennguoinhanInput) {
+        tennguoinhanInput.addEventListener("input", function(e) {
+            // Cho phép chữ cái tiếng Việt và khoảng trắng
+            this.value = this.value.replace(/[^A-Za-zÀ-ỹ\s]/g, '');
+        });
+    }
+    
+    // Xóa khoảng trắng thừa cho địa chỉ
+    const diachinhanInput = document.querySelector("#diachinhan");
+    if (diachinhanInput) {
+        diachinhanInput.addEventListener("blur", function(e) {
+            this.value = this.value.trim().replace(/\s+/g, ' ');
+        });
+    }
+});

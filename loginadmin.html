@@ -120,10 +120,11 @@
         }
 
         #login-error {
-            color: #e74c3c;
             margin-top: 15px;
             font-size: 14px;
             min-height: 20px;
+            display: none;
+            transition: all 0.3s ease;
         }
 
         .back-link {
@@ -131,10 +132,21 @@
             color: #B5292F;
             text-decoration: none;
             font-size: 14px;
+            display: inline-block;
         }
 
         .back-link:hover {
             text-decoration: underline;
+            color: #ff6b35;
+        }
+
+        /* Style cho input validation */
+        .form-control:focus:invalid {
+            border-color: #e74c3c;
+        }
+
+        .form-control:focus:valid {
+            border-color: #27ae60;
         }
     </style>
 </head>
@@ -147,11 +159,16 @@
         <form id="login-form">
             <div class="form-group">
                 <label for="login-phone">Số điện thoại:</label>
-                <input type="text" id="login-phone" name="phone" class="form-control" required placeholder="Nhập số điện thoại">
+                <input type="tel" id="login-phone" name="phone" class="form-control" required 
+                       placeholder="Nhập số điện thoại (10 số)"
+                       maxlength="10"
+                       autocomplete="tel">
             </div>
             <div class="form-group">
                 <label for="login-password">Mật khẩu:</label>
-                <input type="password" id="login-password" name="password" class="form-control" required placeholder="Nhập mật khẩu">
+                <input type="password" id="login-password" name="password" class="form-control" required 
+                       placeholder="Nhập mật khẩu"
+                       autocomplete="current-password">
             </div>
             <button type="submit" class="login-btn">Đăng nhập</button>
         </form>
@@ -163,9 +180,26 @@
         // Kiểm tra nếu đã đăng nhập thì chuyển về admin
         window.onload = function() {
             let currentUser = JSON.parse(localStorage.getItem("currentuser"));
-            if (currentUser && currentUser.userType == 1) {
+            if (currentUser && (currentUser.userType == 1 || currentUser.userType === "1")) {
                 window.location.href = "admin.html";
             }
+            
+            // Debug: Kiểm tra tài khoản admin có tồn tại không
+            console.log("=== DEBUG INFO ===");
+            let accounts = JSON.parse(localStorage.getItem("accounts")) || [];
+            console.log("Tổng số tài khoản:", accounts.length);
+            let adminAccounts = accounts.filter(acc => acc.userType == 1 || acc.userType === "1");
+            console.log("Số tài khoản admin:", adminAccounts.length);
+            if (adminAccounts.length > 0) {
+                console.log("Thông tin admin:");
+                adminAccounts.forEach(admin => {
+                    console.log("- SĐT:", admin.phone, "| Tên:", admin.fullname, "| UserType:", admin.userType, typeof admin.userType);
+                });
+            } else {
+                console.log("CẢNH BÁO: Chưa có tài khoản admin nào!");
+                console.log("Hãy vào trang index.html hoặc chạy initialization.js để tạo tài khoản admin mặc định.");
+            }
+            console.log("==================");
         };
 
         // Xử lý form đăng nhập
@@ -178,14 +212,23 @@
             let loginBtn = document.querySelector(".login-btn");
             
             errorDiv.textContent = "";
+            errorDiv.style.display = "none";
             
-            // Basic validation
-            if (phone.length !== 10 || !/^\d+$/.test(phone)) {
-                errorDiv.textContent = "Số điện thoại phải có 10 chữ số!";
+            // Validation
+            if (!phone) {
+                showError("Vui lòng nhập số điện thoại!");
+                return;
+            }
+            if (!/^\d{10}$/.test(phone)) {
+                showError("Số điện thoại phải có đúng 10 chữ số!");
+                return;
+            }
+            if (!password) {
+                showError("Vui lòng nhập mật khẩu!");
                 return;
             }
             if (password.length < 6) {
-                errorDiv.textContent = "Mật khẩu phải có ít nhất 6 ký tự!";
+                showError("Mật khẩu phải có ít nhất 6 ký tự!");
                 return;
             }
             
@@ -196,20 +239,81 @@
             // Lấy danh sách tài khoản
             let accounts = JSON.parse(localStorage.getItem("accounts")) || [];
             
+            if (!accounts || accounts.length === 0) {
+                showError("Chưa có tài khoản nào trong hệ thống!");
+                loginBtn.disabled = false;
+                loginBtn.textContent = "Đăng nhập";
+                return;
+            }
+            
             // Tìm tài khoản khớp
             let user = accounts.find(acc => acc.phone === phone && acc.password === password);
             
-            if (user && user.userType == 1) {
-                // Đăng nhập thành công
-                localStorage.setItem("currentuser", JSON.stringify(user));
-                window.location.href = "admin.html";
-            } else {
-                // Đăng nhập thất bại
-                errorDiv.textContent = "Số điện thoại hoặc mật khẩu không đúng, hoặc bạn không phải admin!";
+            if (!user) {
+                showError("Số điện thoại hoặc mật khẩu không đúng!");
                 loginBtn.disabled = false;
                 loginBtn.textContent = "Đăng nhập";
+                return;
             }
+            
+            // Kiểm tra quyền admin
+            if (user.userType != 1 && user.userType !== "1") {
+                showError("Tài khoản này không có quyền admin!");
+                loginBtn.disabled = false;
+                loginBtn.textContent = "Đăng nhập";
+                return;
+            }
+            
+            // Đăng nhập thành công
+            localStorage.setItem("currentuser", JSON.stringify(user));
+            errorDiv.style.display = "block";
+            errorDiv.style.color = "#27ae60";
+            errorDiv.style.background = "#e6ffe6";
+            errorDiv.style.borderLeft = "3px solid #27ae60";
+            errorDiv.style.padding = "10px";
+            errorDiv.style.borderRadius = "5px";
+            errorDiv.textContent = "Đăng nhập thành công! Đang chuyển hướng...";
+            
+            setTimeout(function() {
+                window.location.href = "admin.html";
+            }, 500);
         });
+
+        // Hàm hiển thị lỗi
+        function showError(message) {
+            let errorDiv = document.getElementById("login-error");
+            errorDiv.style.display = "block";
+            errorDiv.style.color = "#e74c3c";
+            errorDiv.style.background = "#ffe6e6";
+            errorDiv.style.borderLeft = "3px solid #e74c3c";
+            errorDiv.style.padding = "10px";
+            errorDiv.style.borderRadius = "5px";
+            errorDiv.textContent = message;
+        }
+
+        // Chỉ cho phép nhập số cho số điện thoại
+        document.getElementById("login-phone").addEventListener("input", function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value.length > 10) {
+                this.value = this.value.slice(0, 10);
+            }
+            // Xóa thông báo lỗi khi bắt đầu nhập
+            let errorDiv = document.getElementById("login-error");
+            errorDiv.style.display = "none";
+        });
+
+        // Xóa thông báo lỗi khi nhập mật khẩu
+        document.getElementById("login-password").addEventListener("input", function() {
+            let errorDiv = document.getElementById("login-error");
+            errorDiv.style.display = "none";
+        });
+    </script>
+    
+    <!-- Load initialization để tạo tài khoản admin mặc định -->
+    <script src="./js/initialization.js"></script>
+    <script>
+        // Đảm bảo tài khoản admin được tạo khi tải trang
+        createAdminAccount();
     </script>
 </body>
 </html>

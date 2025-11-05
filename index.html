@@ -434,7 +434,7 @@
                         </div>
                         <div class="widget-social">
                             <div class="widget-social-item">
-                                <a href="">
+                                <a href="https://www.facebook.com/tuoitredhsaigon">
                                     <i class="fab fa-facebook-f"></i>
                                 </a>
                             </div>
@@ -625,7 +625,7 @@
     <div class="copyright-wrap">
         <div class="container">
             <div class="copyright-content">
-                <p> 2025 | Copyright by SpicyNoodle7749.</p>
+                <p> 2025 | Designed by SpicyNoodle7749.</p>
             </div>
         </div>
     </div>
@@ -772,17 +772,30 @@
                             <form action="" class="info-nhan-hang">
                                 <div class="form-group">
                                     <input id="tennguoinhan" name="tennguoinhan" type="text"
-                                        placeholder="Tên người nhận" class="form-control">
+                                        placeholder="Tên người nhận" class="form-control"
+                                        required
+                                        minlength="3"
+                                        maxlength="50"
+                                        pattern="[A-Za-zÀ-ỹ\s]+"
+                                        title="Tên phải từ 3-50 ký tự và chỉ chứa chữ cái">
                                     <span class="form-message"></span>
                                 </div>
                                 <div class="form-group">
-                                    <input id="sdtnhan" name="sdtnhan" type="text" placeholder="Số điện thoại nhận hàng"
-                                        class="form-control">
+                                    <input id="sdtnhan" name="sdtnhan" type="tel" placeholder="Số điện thoại nhận hàng"
+                                        class="form-control"
+                                        required
+                                        pattern="0[0-9]{9}"
+                                        maxlength="10"
+                                        title="Số điện thoại phải có 10 số và bắt đầu bằng số 0">
                                     <span class="form-message"></span>
                                 </div>
                                 <div class="form-group">
                                     <input id="diachinhan" name="diachinhan" type="text" placeholder="Địa chỉ nhận hàng"
-                                        class="form-control chk-ship">
+                                        class="form-control chk-ship"
+                                        required
+                                        minlength="10"
+                                        maxlength="200"
+                                        title="Địa chỉ phải từ 10-200 ký tự">
                                     <span class="form-message"></span>
                                 </div>
                             </form>

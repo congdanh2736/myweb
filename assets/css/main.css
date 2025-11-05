@@ -84,7 +84,7 @@ body {
     background-color: #181818;
     position: relative;
 
-    /* font-family: sans-serif; */
+    font-family: sans-serif;
 }
 
 body,input,button,textarea,pre {
@@ -2421,6 +2421,7 @@ input[type=number] {
 
 .widget-contact-item a {
     color: var(--yellow);
+    text-decoration: underline;
 }
 
 .widget-contact-item:hover i {

@@ -30,10 +30,11 @@ function closeModal() {
 
 function increasingNumber(e) {
     let qty = e.parentNode.querySelector('.input-qty');
-    if (parseInt(qty.value) < qty.max) {
+    let stockQty = parseInt(qty.dataset.stock);
+    if (parseInt(qty.value) < stockQty) {
         qty.value = parseInt(qty.value) + 1;
     } else {
-        qty.value = qty.max;
+        qty.value = stockQty;
     }
 }
 
@@ -211,7 +212,7 @@ function detailProduct(index) {
             <div class="buttons_added">
                 <span class="curr-soluong">Số lượng còn: ${stockQty}</span>
                 <input class="minus is-form" type="button" value="-" onclick="decreasingNumber(this)">
-                <input class="input-qty" max="${stockQty}" min="1" name="" type="number" value="1">
+                <input class="input-qty" max="${stockQty}" min="1" name="" type="number" value="1" data-stock="${stockQty}">
                 <input class="plus is-form" type="button" value="+" onclick="increasingNumber(this)">
             </div>
         </div>
@@ -260,6 +261,26 @@ function detailProduct(index) {
             priceText.innerHTML = vnd(price);
         });
     });
+
+    // Validation real-time cho số lượng
+    qty.addEventListener('input', function() {
+        let value = parseInt(this.value);
+        if (isNaN(value) || value < 1) {
+            this.value = 1;
+        } else if (value > stockQty) {
+            this.value = stockQty;
+        }
+    });
+    
+    qty.addEventListener('blur', function() {
+        let value = parseInt(this.value);
+        if (isNaN(value) || value < 1) {
+            this.value = 1;
+        } else if (value > stockQty) {
+            this.value = stockQty;
+        }
+    });
+
     // Them san pham vao gio hang
     let productbtn = document.querySelector('.button-dat');
     productbtn.addEventListener('click', (e) => {
@@ -326,21 +347,58 @@ function addCart(index) {
     let soluong = document.querySelector('.input-qty').value;
     let popupDetailNote = document.querySelector('#popup-detail-note').value;
     let note = popupDetailNote == "" ? "Không có ghi chú" : popupDetailNote;
+    
+    // Validation số lượng
+    let qtyValue = parseInt(soluong);
+    if (isNaN(qtyValue) || qtyValue < 1) {
+        toast({ title: 'Lỗi', message: 'Số lượng phải lớn hơn 0!', type: 'error', duration: 3000 });
+        return;
+    }
+    
+    // Lấy thông tin sản phẩm để kiểm tra tồn kho
+    let products = JSON.parse(localStorage.getItem('products'));
+    let product = products.find(p => p.id == index);
+    if (product) {
+        // Tính tồn kho thực tế (product.soluong đã được trừ khi hoàn thành đơn)
+        // Cần trừ thêm các đơn hàng đang chờ xử lý (chưa hoàn thành, chưa hủy)
+        let orders = localStorage.getItem("order") ? JSON.parse(localStorage.getItem("order")) : [];
+        let orderDetails = localStorage.getItem("orderDetails") ? JSON.parse(localStorage.getItem("orderDetails")) : [];
+        let pendingQty = 0;
+        
+        orders.forEach(order => {
+            // Chỉ tính các đơn hàng đang chờ xử lý (trangthai == 0)
+            if (order.trangthai == 0) {
+                orderDetails.forEach(detail => {
+                    if (detail.madon == order.id && detail.id == product.id) {
+                        pendingQty += parseInt(detail.soluong);
+                    }
+                });
+            }
+        });
+        
+        let stockQty = parseInt(product.soluong) - pendingQty;
+        
+        if (qtyValue > stockQty) {
+            toast({ title: 'Lỗi', message: 'Số lượng vượt quá tồn kho khả dụng (' + stockQty + ' sản phẩm)!', type: 'error', duration: 3000 });
+            return;
+        }
+    }
+    
     let productcart = {
         id: index,
-        soluong: parseInt(soluong),
+        soluong: qtyValue,
         note: note
     }
     let vitri = currentuser.cart.findIndex(item => item.id == productcart.id);
     if (vitri == -1) {
         currentuser.cart.push(productcart);
     } else {
-        currentuser.cart[vitri].soluong = parseInt(currentuser.cart[vitri].soluong) + parseInt(productcart.soluong);
+        currentuser.cart[vitri].soluong = parseInt(currentuser.cart[vitri].soluong) + qtyValue;
     }
     localStorage.setItem('currentuser', JSON.stringify(currentuser));
     updateAmount();
     closeModal();
-    // toast({ title: 'Success', message: 'Thêm thành công sản phẩm vào giỏ hàng', type: 'success', duration: 3000 });
+    toast({ title: 'Thành công', message: 'Thêm sản phẩm vào giỏ hàng thành công!', type: 'success', duration: 3000 });
 }
 
 //Show gio hang
@@ -985,34 +1043,6 @@ function formatDate(date) {
     if (dd < 10) dd = '0' + dd;
     if (mm < 10) mm = '0' + mm;
     return dd + '/' + mm + '/' + yyyy;
-}
-
-// Kiểm tra số điện thoại hợp lệ
-function validatePhoneNumber(phone) {
-    // Regex kiểm tra số điện thoại Việt Nam
-    const phoneRegex = /^(0[0-9]{9})$/;
-    
-    if (!phone) {
-        toast({
-            title: 'Lỗi',
-            message: 'Vui lòng nhập số điện thoại!',
-            type: 'error',
-            duration: 3000
-        });
-        return false;
-    }
-
-    if (!phoneRegex.test(phone)) {
-        toast({
-            title: 'Lỗi',
-            message: 'Số điện thoại không hợp lệ! Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0',
-            type: 'error',
-            duration: 3000
-        });
-        return false;
-    }
-
-    return true;
 }
 
 // Xem chi tiet don hang
