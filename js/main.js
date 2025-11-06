@@ -184,13 +184,18 @@ function setupReviewEventListeners(productId) {
 }
 
 //Xem chi tiet san pham
-function detailProduct(index) {
+function detailProduct(event, index) {
+    event.preventDefault();
     let modal = document.querySelector('.modal.product-detail');
     let products = JSON.parse(localStorage.getItem('products'));
-    event.preventDefault();
     let infoProduct = products.find(sp => {
-        return sp.id === index;
+        return sp.id === parseInt(index);
     })
+    
+    if (!infoProduct) {
+        console.error('Product not found with id:', index);
+        return;
+    }
     // Tính số lượng đã xuất (tổng số lượng đã bán ra cho sản phẩm này)
     let orderDetails = localStorage.getItem("orderDetails") ? JSON.parse(localStorage.getItem("orderDetails")) : [];
     let exportedQty = 0;
@@ -1215,14 +1220,14 @@ function renderProducts(showProduct) {
             <div class="col-product">
                 <article class="card-product" >
                     <div class="card-header">
-                        <a href="#" class="card-image-link" onclick="detailProduct(${product.id})">
+                        <a href="#" class="card-image-link" onclick="detailProduct(event, ${product.id})">
                         <img class="card-image" src="${product.img}" alt="${product.title}">
                         </a>
                     </div>
                     <div class="food-info">
                         <div class="card-content">
                             <div class="card-title">
-                                <a href="#" class="card-title-link" onclick="detailProduct(${product.id})">${product.title}</a>
+                                <a href="#" class="card-title-link" onclick="detailProduct(event, ${product.id})">${product.title}</a>
                             </div>
                             ${ratingDisplay}
                         </div>
@@ -1230,11 +1235,10 @@ function renderProducts(showProduct) {
                             <div class="product-price">
                                 <span class="current-price">${vnd(product.price)}</span>
                             </div>
-                        <div class="product-buy">
-                            <button onclick="detailProduct(${product.id})" class="card-button order-item"><i class="fa-solid fa-eye"></i> Xem chi tiết</button>
-                        </div> 
-                    </div>
-                    </div>
+                            <div class="product-buy">
+                                <button onclick="detailProduct(event, ${product.id})" class="card-button order-item"><i class="fa-solid fa-eye"></i> Xem chi tiết</button>
+                            </div> 
+                        </div>
                 </article>
             </div>`;
         });
@@ -1568,6 +1572,65 @@ districtSelect.addEventListener("change", function() {
   }
 });
 
+// Hàm tính phân bố rating
+function getRatingDistribution(productId) {
+    let reviews = getReviews(productId);
+    let distribution = {
+        5: 0,
+        4: 0,
+        3: 0,
+        2: 0,
+        1: 0
+    };
+    
+    reviews.forEach(review => {
+        distribution[review.rating]++;
+    });
+    
+    return distribution;
+}
+
+// Hàm render phần tổng quan đánh giá với biểu đồ
+function renderReviewsHeader(productId) {
+    let reviews = getReviews(productId);
+    let avgRating = calculateAverageRating(productId);
+    let totalReviews = reviews.length;
+    let distribution = getRatingDistribution(productId);
+    
+    // Tính phần trăm cho mỗi rating
+    let percentages = {};
+    for (let i = 5; i >= 1; i--) {
+        percentages[i] = totalReviews > 0 ? (distribution[i] / totalReviews * 100).toFixed(0) : 0;
+    }
+    
+    return `
+        <div class="reviews-overview">
+            <div class="rating-summary-left">
+                <div class="average-rating-big">
+                    <div class="rating-number-big">${avgRating.toFixed(1)}</div>
+                    <div class="rating-stars-display">
+                        ${generateStarDisplay(Math.round(avgRating))}
+                    </div>
+                    <div class="total-reviews">Tổng số ${totalReviews} đánh giá</div>
+                </div>
+            </div>
+            <div class="rating-bars">
+                ${[5, 4, 3, 2, 1].map(rating => `
+                    <div class="rating-bar-row">
+                        <span class="rating-label">
+                            <i class="fa-solid fa-star"></i> ${rating}
+                        </span>
+                        <div class="rating-bar-container">
+                            <div class="rating-bar-fill rating-${rating}" style="width: ${percentages[rating]}%"></div>
+                        </div>
+                        <span class="rating-count">${distribution[rating]}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
 // Hàm tính trung bình sao
 function calculateAverageRating(productId) {
     let reviews = getReviews(productId);
@@ -1602,40 +1665,54 @@ function getReviews(productId) {
     return allReviews[productId] || [];
 }
 
-// Hàm render danh sách reviews
+// Hàm render danh sách reviews (trả về HTML string cho modal)
 function renderReviews(productId) {
     let reviews = getReviews(productId);
-    if (reviews.length === 0) {
-        return '<p class="no-reviews"><i class="fa-regular fa-comment"></i> Chưa có đánh giá nào.</p>';
-    }
+    
+    // Render header với biểu đồ
+    let headerHTML = renderReviewsHeader(productId);
     
     // Sắp xếp đánh giá mới nhất trước
     reviews.sort((a, b) => new Date(b.date) - new Date(a.date));
     
-    let html = '<div class="reviews-list">';
-    reviews.forEach(review => {
+    // Render từng review
+    let reviewsHTML = reviews.map(review => {
         let user = getUserByPhone(review.userId);
         let userName = user ? user.fullname : 'Người dùng ẩn danh';
+        let userInitial = userName.charAt(0).toUpperCase();
         let date = new Date(review.date).toLocaleDateString('vi-VN', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
         });
-        html += `
+        
+        return `
             <div class="review-item">
                 <div class="review-header">
-                    <span class="review-user"><i class="fa-solid fa-user"></i> ${userName}</span>
-                    <span class="review-date"><i class="fa-regular fa-calendar"></i> ${date}</span>
+                    <div class="review-avatar">${userInitial}</div>
+                    <div class="review-user-info">
+                        <div class="review-user-name">${userName}</div>
+                        <div class="review-rating-stars">
+                            ${generateStarDisplay(review.rating)}
+                        </div>
+                    </div>
+                    <div class="review-date">
+                        <i class="fa-regular fa-calendar"></i> ${date}
+                    </div>
                 </div>
-                <div class="review-rating">
-                    ${generateStarDisplay(review.rating)}
-                </div>
-                <p class="review-comment">${review.comment}</p>
+                <div class="review-comment">${review.comment}</div>
             </div>
         `;
-    });
-    html += '</div>';
-    return html;
+    }).join('');
+    
+    return `
+        <div class="reviews-list">
+            ${headerHTML}
+            <div class="reviews-items">
+                ${reviewsHTML || '<p class="no-reviews">Chưa có đánh giá nào</p>'}
+            </div>
+        </div>
+    `;
 }
 
 // Hàm render form đánh giá

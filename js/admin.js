@@ -47,6 +47,8 @@ for(let i = 0; i < sidebars.length; i++) {
             showThongKe(createObj());
         } else if (i === 4) {
             showPhieuNhap();
+        } else if (i === 5) {
+            showFeedback();
         }
     };
 }
@@ -2191,4 +2193,243 @@ window.onload = function() {
     showPhieuNhap();
 };
 
+// ================== FEEDBACK ==================
+
+// Hiển thị danh sách feedback
+function showFeedback() {
+    let status = document.getElementById("feedback-status").value;
+    let searchText = document.getElementById("form-search-feedback").value.toLowerCase();
+    
+    let feedbacks = JSON.parse(localStorage.getItem('feedbacks')) || [];
+    
+    // Filter by status
+    if (status !== 'all') {
+        feedbacks = feedbacks.filter(fb => fb.status === status);
+    }
+    
+    // Filter by search text
+    if (searchText) {
+        feedbacks = feedbacks.filter(fb => 
+            fb.name.toLowerCase().includes(searchText) || 
+            fb.email.toLowerCase().includes(searchText) ||
+            fb.message.toLowerCase().includes(searchText)
+        );
+    }
+    
+    // Sort by timestamp (newest first)
+    feedbacks.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    showFeedbackArr(feedbacks);
+    updateFeedbackBadge();
+}
+
+// Cập nhật badge số lượng feedback chưa đọc
+function updateFeedbackBadge() {
+    let feedbacks = JSON.parse(localStorage.getItem('feedbacks')) || [];
+    let unreadCount = feedbacks.filter(fb => fb.status === 'unread').length;
+    
+    let badge = document.getElementById('feedback-unread-badge');
+    if (badge) {
+        if (unreadCount > 0) {
+            badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+            badge.style.display = 'block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+}
+
+// Hiển thị mảng feedback
+function showFeedbackArr(feedbacks) {
+    let feedbackHtml = '';
+    if (feedbacks.length == 0) {
+        feedbackHtml = `<td colspan="6">Không có feedback nào</td>`;
+    } else {
+        feedbacks.forEach((fb, index) => {
+            let statusClass = fb.status === 'unread' ? 'status-no-complete' : 'status-complete';
+            let statusText = fb.status === 'unread' ? 'Chưa đọc' : 'Đã đọc';
+            let date = formatDate(fb.timestamp);
+            
+            feedbackHtml += `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${fb.name}</td>
+                <td>${fb.email}<br><small>${fb.phone}</small></td>
+                <td>${date}</td>
+                <td><span class="${statusClass}">${statusText}</span></td>
+                <td class="control">
+                    <button class="btn-detail" onclick="viewFeedback('${fb.id}')"><i class="fa-regular fa-eye"></i> Xem</button>
+                    ${fb.status === 'unread' ? `<button class="btn-check" onclick="markAsRead('${fb.id}')" title="Đánh dấu đã đọc"><i class="fa-solid fa-check"></i></button>` : ''}
+                    <button class="btn-delete" onclick="deleteFeedback('${fb.id}')" title="Xóa feedback"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>`;
+        });
+    }
+    document.getElementById("show-feedback").innerHTML = feedbackHtml;
+}
+
+// Xem chi tiết feedback
+function viewFeedback(id) {
+    let feedbacks = JSON.parse(localStorage.getItem('feedbacks')) || [];
+    let fb = feedbacks.find(f => f.id === id);
+    
+    if (fb) {
+        // Mark as read
+        fb.status = 'read';
+        localStorage.setItem('feedbacks', JSON.stringify(feedbacks));
+        
+        // Show modal with feedback details
+        let modalHtml = `
+            <div class="modal feedback-detail">
+                <div class="modal-container">
+                    <h3 class="modal-container-title">Chi tiết Feedback</h3>
+                    <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+                    <div class="modal-content">
+                        <div class="feedback-info">
+                            <div class="info-row">
+                                <strong>Họ tên:</strong> ${fb.name}
+                            </div>
+                            <div class="info-row">
+                                <strong>Email:</strong> ${fb.email}
+                            </div>
+                            <div class="info-row">
+                                <strong>Số điện thoại:</strong> ${fb.phone}
+                            </div>
+                            <div class="info-row">
+                                <strong>Thời gian:</strong> ${formatDate(fb.timestamp)}
+                            </div>
+                            <div class="info-row">
+                                <strong>Nội dung:</strong>
+                                <div class="message-content">${fb.message}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        let modal = document.querySelector('.feedback-detail');
+        modal.classList.add('open');
+        
+        // Thêm event listener cho nút đóng
+        modal.querySelector('.modal-close').addEventListener('click', function() {
+            modal.classList.remove('open');
+            setTimeout(() => modal.remove(), 300);
+        });
+        
+        // Đóng khi click bên ngoài modal
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.remove('open');
+                setTimeout(() => modal.remove(), 300);
+            }
+        });
+        
+        // Refresh display
+        showFeedback();
+    }
+}
+
+// Đánh dấu đã đọc
+function markAsRead(id) {
+    let feedbacks = JSON.parse(localStorage.getItem('feedbacks')) || [];
+    let fb = feedbacks.find(f => f.id === id);
+    
+    if (fb) {
+        fb.status = 'read';
+        localStorage.setItem('feedbacks', JSON.stringify(feedbacks));
+        showFeedback();
+        toast({ title: 'Thành công', message: 'Đã đánh dấu đã đọc!', type: 'success', duration: 3000 });
+    }
+}
+
+// Đánh dấu tất cả là đã đọc
+function markAllAsRead() {
+    let feedbacks = JSON.parse(localStorage.getItem('feedbacks')) || [];
+    let unreadCount = feedbacks.filter(f => f.status === 'unread').length;
+    
+    if (unreadCount === 0) {
+        toast({ title: 'Thông báo', message: 'Không có feedback chưa đọc!', type: 'info', duration: 3000 });
+        return;
+    }
+    
+    if (confirm(`Bạn có chắc muốn đánh dấu tất cả ${unreadCount} feedback chưa đọc là đã đọc?`)) {
+        feedbacks.forEach(fb => {
+            if (fb.status === 'unread') {
+                fb.status = 'read';
+            }
+        });
+        localStorage.setItem('feedbacks', JSON.stringify(feedbacks));
+        showFeedback();
+        toast({ title: 'Thành công', message: `Đã đánh dấu ${unreadCount} feedback là đã đọc!`, type: 'success', duration: 3000 });
+    }
+}
+
+// Xóa feedback
+function deleteFeedback(id) {
+    if (confirm('Bạn có chắc muốn xóa feedback này?')) {
+        let feedbacks = JSON.parse(localStorage.getItem('feedbacks')) || [];
+        feedbacks = feedbacks.filter(f => f.id !== id);
+        localStorage.setItem('feedbacks', JSON.stringify(feedbacks));
+        showFeedback();
+        toast({ title: 'Thành công', message: 'Đã xóa feedback!', type: 'success', duration: 3000 });
+    }
+}
+
+// Reset tìm kiếm feedback
+function cancelSearchFeedback() {
+    document.getElementById("feedback-status").value = "all";
+    document.getElementById("form-search-feedback").value = "";
+    showFeedback();
+}
+
+// Xuất feedback ra file CSV
+function exportFeedback() {
+    let feedbacks = JSON.parse(localStorage.getItem('feedbacks')) || [];
+    
+    if (feedbacks.length === 0) {
+        toast({ title: 'Thông báo', message: 'Không có feedback để xuất!', type: 'info', duration: 3000 });
+        return;
+    }
+    
+    // Sắp xếp theo thời gian mới nhất
+    feedbacks.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    // Tạo header CSV
+    let csv = '\uFEFF'; // BOM cho UTF-8
+    csv += 'STT,Họ tên,Email,Số điện thoại,Thời gian,Trạng thái,Nội dung\n';
+    
+    // Thêm dữ liệu
+    feedbacks.forEach((fb, index) => {
+        let statusText = fb.status === 'unread' ? 'Chưa đọc' : 'Đã đọc';
+        let date = formatDate(fb.timestamp);
+        let message = fb.message.replace(/"/g, '""').replace(/\n/g, ' '); // Escape quotes và newlines
+        
+        csv += `${index + 1},"${fb.name}","${fb.email}","${fb.phone}","${date}","${statusText}","${message}"\n`;
+    });
+    
+    // Tạo và download file
+    let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    let link = document.createElement('a');
+    let url = URL.createObjectURL(blob);
+    
+    let now = new Date();
+    let filename = `feedback_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}.csv`;
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast({ title: 'Thành công', message: 'Đã xuất file feedback!', type: 'success', duration: 3000 });
+}
+
+// Khởi tạo hiển thị feedback và badge khi load trang
+window.onload = function() {
+    showFeedback();
+    updateFeedbackBadge();
+};
 

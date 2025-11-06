@@ -386,5 +386,16 @@
         font-size: 20px;
     }
 
-    
+
+}
+
+@media (max-width: 463px) {
+    .modal-footer-control {
+        padding-left: 170px;        
+    }
+
+    .modal-footer-control button {
+        height: 40%;
+        margin: 5px;
+    }
 }

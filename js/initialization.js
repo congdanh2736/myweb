@@ -1260,3 +1260,110 @@ window.onload = createSampleCustomers();
 window.onload = createPhieuNhap();
 window.onload = createSampleReviews();
 window.onload = createSampleOrders();
+window.onload = createSampleFeedbacks();
+
+// Khởi tạo 10 feedback mẫu
+function createSampleFeedbacks() {
+    let feedbacks = JSON.parse(localStorage.getItem('feedbacks')) || [];
+    
+    // Kiểm tra xem đã có feedback mẫu chưa
+    let hasSampleFeedbacks = feedbacks.some(fb => fb.name === "Nguyễn Văn A");
+    
+    if (!hasSampleFeedbacks) {
+        let sampleFeedbacks = [
+            {
+                id: "fb001",
+                name: "Nguyễn Văn A",
+                phone: "0901234567",
+                email: "nguyenvana@example.com",
+                message: "Sản phẩm rất ngon, giao hàng nhanh. Cảm ơn cửa hàng!",
+                timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 ngày trước
+                status: "read"
+            },
+            {
+                id: "fb002",
+                name: "Trần Thị B",
+                phone: "0912345678",
+                email: "tranthib@example.com",
+                message: "Mì cay rất hợp khẩu vị, sẽ ủng hộ thêm. Có thể thêm nhiều món chay hơn không?",
+                timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 ngày trước
+                status: "read"
+            },
+            {
+                id: "fb003",
+                name: "Lê Văn C",
+                phone: "0923456789",
+                email: "levanc@example.com",
+                message: "Giao hàng chậm hơn mong đợi, nhưng món ăn vẫn ngon. Mong cải thiện dịch vụ giao hàng.",
+                timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 ngày trước
+                status: "unread"
+            },
+            {
+                id: "fb004",
+                name: "Phạm Thị D",
+                phone: "0934567890",
+                email: "phamthid@example.com",
+                message: "Website dễ sử dụng, đặt hàng thuận tiện. Cảm ơn đội ngũ phát triển!",
+                timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 ngày trước
+                status: "read"
+            },
+            {
+                id: "fb005",
+                name: "Hoàng Văn E",
+                phone: "0945678901",
+                email: "hoangvane@example.com",
+                message: "Món ăn nóng hổi khi nhận, đóng gói cẩn thận. Rất hài lòng!",
+                timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 ngày trước
+                status: "unread"
+            },
+            {
+                id: "fb006",
+                name: "Đỗ Thị F",
+                phone: "0956789012",
+                email: "dothif@example.com",
+                message: "Có thể thêm tùy chọn mức độ cay không? Mình thích ăn cay nhưng không quá cay.",
+                timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(), // 12 giờ trước
+                status: "unread"
+            },
+            {
+                id: "fb007",
+                name: "Vũ Văn G",
+                phone: "0967890123",
+                email: "vuvang@example.com",
+                message: "Giá cả hợp lý, chất lượng tốt. Sẽ giới thiệu cho bạn bè.",
+                timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 giờ trước
+                status: "read"
+            },
+            {
+                id: "fb008",
+                name: "Bùi Thị H",
+                phone: "0978901234",
+                email: "buithih@example.com",
+                message: "Phục vụ tận tình, nhân viên thân thiện. Trải nghiệm tốt!",
+                timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(), // 3 giờ trước
+                status: "unread"
+            },
+            {
+                id: "fb009",
+                name: "Ngô Văn I",
+                phone: "0989012345",
+                email: "ngovani@example.com",
+                message: "Món ăn đa dạng, có nhiều lựa chọn cho người ăn chay.",
+                timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), // 1 giờ trước
+                status: "unread"
+            },
+            {
+                id: "fb010",
+                name: "Trịnh Thị K",
+                phone: "0990123456",
+                email: "trinhthik@example.com",
+                message: "Có chương trình khuyến mãi gì không? Mình muốn đặt cho nhóm đông người.",
+                timestamp: new Date().toISOString(), // Hiện tại
+                status: "unread"
+            }
+        ];
+        
+        feedbacks.push(...sampleFeedbacks);
+        localStorage.setItem('feedbacks', JSON.stringify(feedbacks));
+    }
+}

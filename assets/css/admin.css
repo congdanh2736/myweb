@@ -170,24 +170,19 @@ body,input,button,textarea,pre {
 }
 
 .menu-icon {
-    height: 45px;
-    width: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* margin-left: 30px; */
+    margin-left: 30px;
     background-color: #000;
-    font-size: 25px;
-    color: var(--red);
+    font-size: 30px;
+    color: var(--yellow);
     cursor: pointer;
     padding: 5px;
-    border-radius: 50%;
+    border-radius: 10px;
     transition: 0.2s ease;
 }
 
 .menu-icon:hover {
-    transform: scale(1.05);
-    /* color: var(--more-yellow); */
+    transform: scale(1.1);
+    color: var(--more-yellow);
 }
 
 .search {
@@ -422,7 +417,6 @@ body,input,button,textarea,pre {
     align-items: center;
     width: 100%;
     list-style: none;
-    gap: 5px;
 }
 
 .sidebar.open .sidebar-link {
@@ -472,15 +466,14 @@ body,input,button,textarea,pre {
 }
 
 .sidebar-list-item.active {
-    border: 2px solid var(--red);
     color: var(--red);
     background-color: var(--lightest-gray);
 }
 
-/* .sidebar-list-item:hover {
+.sidebar-list-item:hover {
     background-color: rgb(255, 255, 255);
     color: #ffe066; 
-} */
+}
 
 .sidebar-list-item.active::before {
     content: "";
@@ -859,18 +852,24 @@ tbody tr td {
     background-color: #27ae60;
     color: white !important;
     flex: 1;
-    padding: 5px;
-    border-radius: 50px;
 }
 
 .btn-check {
-    background-color: #2196F3;
+    background-color: #4caf50;
     color: white;
-    width: 100%;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
 }
 
 .btn-check:hover {
-    background-color: #0b7dda;
+    background-color: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.btn-check i {
+    font-size: 14px;
 }
 
 .btn-delete {
@@ -1405,19 +1404,17 @@ label a {
 .price-total {
     display: flex;
     flex-direction: column;
-    margin: 10px;
 }
 
 .price-total .thanhtien {
     color: #808080;
-    font-size: 20px;
-    margin-bottom: 10px;
+    font-size: 13px;
 }
 
 .price-total .price {
     color: var(--red);
     font-weight: 500;
-    font-size: 18px;
+    font-size: 16px;
     color: #ffe066;
 }
 
@@ -2165,7 +2162,6 @@ label a {
 
 /* Modal phiếu nhập hàng */
 .modal.add-phieu-nhap .modal-container {
-    margin-top: 70px;
     width: 90%;
     max-width: 900px;
     max-height: 90vh;
@@ -2190,6 +2186,7 @@ label a {
 
 .add-phieu-form .form-control {
     width: 100%;
+    padding: 12px 16px;
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.95);
@@ -2449,4 +2446,91 @@ label a {
 .out-of-stock {
     background-color: #f44336;
     color: white;
+}
+
+/* ================== FEEDBACK ================== */
+
+.modal.feedback-detail .modal-container {
+    width: 600px;
+    padding: 40px;
+    margin-top: 50px;
+}
+
+.feedback-info {
+    margin-top: 20px;
+}
+
+.info-row {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.info-row strong {
+    color: #ffe066;
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.message-content {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Feedback unread badge */
+.feedback-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff3b30;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+.sidebar-icon {
+    position: relative;
+}
+
+/* Feedback status badges in table */
+.status-no-complete {
+    background: #ff9800;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-complete {
+    background: #4caf50;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
 }

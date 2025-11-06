@@ -72,6 +72,15 @@
                             <div class="hidden-sidebar">Phiếu nhập hàng</div>
                         </a>
                     </li>
+                    <li class="sidebar-list-item tab-content">
+                        <a href="#" class="sidebar-link">
+                            <div class="sidebar-icon">
+                                <i class="fa-solid fa-envelope"></i>
+                                <span class="feedback-badge" id="feedback-unread-badge" style="display: none;"></span>
+                            </div>
+                            <div class="hidden-sidebar">Feedback</div>
+                        </a>
+                    </li>
                 </ul>
             </div>
             <div class="bottom-sidebar">
@@ -212,7 +221,7 @@
                                 <td>Liên hệ</td>
                                 <td>Ngày tham gia</td>
                                 <td>Tình trạng</td>
-                                <td>Sửa / Xoá</td>
+                                <td></td>
                             </tr>
                         </thead>
                         <tbody id="show-user">
@@ -399,6 +408,45 @@
                     </table>
                 </div>
                 <!-- </div> -->
+            </div>
+            <!-- Feedback -->
+            <div class="section">
+                <div class="admin-control">
+                    <div class="admin-control-left">
+                        <select name="feedback-status" id="feedback-status" onchange="showFeedback()">
+                            <option value="all">Tất cả</option>
+                            <option value="unread">Chưa đọc</option>
+                            <option value="read">Đã đọc</option>
+                        </select>
+                    </div>
+                    <div class="admin-control-center">
+                        <form action="" class="form-search">
+                            <span class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></span>
+                            <input id="form-search-feedback" type="text" class="form-search-input" placeholder="Tìm kiếm tên, email..." oninput="showFeedback()">
+                        </form>
+                    </div>
+                    <div class="admin-control-right">
+                        <button class="btn-control-large" onclick="exportFeedback()" title="Xuất danh sách feedback"><i class="fa-solid fa-file-export"></i> Xuất Excel</button>
+                        <button class="btn-control-large" onclick="markAllAsRead()" title="Đánh dấu tất cả là đã đọc"><i class="fa-solid fa-check-double"></i> Đọc hết</button>
+                        <button class="btn-reset-order" onclick="cancelSearchFeedback()"><i class="fa-solid fa-arrow-rotate-right"></i></button>
+                    </div>
+                </div>
+                <div class="table">
+                    <table width="100%">
+                        <thead>
+                            <tr>
+                                <td>STT</td>
+                                <td>Người gửi</td>
+                                <td>Liên hệ</td>
+                                <td>Thời gian</td>
+                                <td>Trạng thái</td>
+                                <td>Thao tác</td>
+                            </tr>
+                        </thead>
+                        <tbody id="show-feedback">
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </main>
     </div>
@@ -730,6 +778,7 @@ function switchTab(tab) {
     if (tab === 'customers') tabIndex = 2;
     else if (tab === 'products') tabIndex = 1;
     else if (tab === 'statistics') tabIndex = 4;
+    else if (tab === 'feedback') tabIndex = 5;
     var sidebarTabs = document.querySelectorAll('.sidebar-list-item.tab-content');
     if (sidebarTabs[tabIndex]) sidebarTabs[tabIndex].classList.add('active');
     var sections = document.querySelectorAll('.section');
