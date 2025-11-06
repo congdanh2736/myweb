@@ -170,19 +170,24 @@ body,input,button,textarea,pre {
 }
 
 .menu-icon {
-    margin-left: 30px;
+    height: 45px;
+    width: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* margin-left: 30px; */
     background-color: #000;
-    font-size: 30px;
-    color: var(--yellow);
+    font-size: 25px;
+    color: var(--red);
     cursor: pointer;
     padding: 5px;
-    border-radius: 10px;
+    border-radius: 50%;
     transition: 0.2s ease;
 }
 
 .menu-icon:hover {
-    transform: scale(1.1);
-    color: var(--more-yellow);
+    transform: scale(1.05);
+    /* color: var(--more-yellow); */
 }
 
 .search {
@@ -417,6 +422,7 @@ body,input,button,textarea,pre {
     align-items: center;
     width: 100%;
     list-style: none;
+    gap: 5px;
 }
 
 .sidebar.open .sidebar-link {
@@ -466,14 +472,15 @@ body,input,button,textarea,pre {
 }
 
 .sidebar-list-item.active {
+    border: 2px solid var(--red);
     color: var(--red);
     background-color: var(--lightest-gray);
 }
 
-.sidebar-list-item:hover {
+/* .sidebar-list-item:hover {
     background-color: rgb(255, 255, 255);
     color: #ffe066; 
-}
+} */
 
 .sidebar-list-item.active::before {
     content: "";
@@ -852,6 +859,8 @@ tbody tr td {
     background-color: #27ae60;
     color: white !important;
     flex: 1;
+    padding: 5px;
+    border-radius: 50px;
 }
 
 .btn-check {
@@ -972,6 +981,38 @@ tbody tr td {
     border-radius: 5px;
     outline: none;
     transition: border 0.3s linear;
+}
+
+/* Password input wrapper */
+.password-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-input-wrapper .form-control {
+    padding-right: 45px;
+}
+
+.toggle-password-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px 10px;
+    color: #666;
+    font-size: 16px;
+    transition: color 0.3s ease;
+}
+
+.toggle-password-btn:hover {
+    color: var(--orange);
+}
+
+.toggle-password-btn i {
+    pointer-events: none;
 }
 
 select.form-control {
@@ -1232,6 +1273,13 @@ label a {
     box-shadow: rgba(255, 255, 255, 0.3) 0 0 0 1px;
 }
 
+.modal-detail-order .modal-detail-left .order-item-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+}
+
 .modal-detail-right {
     height: 100%;
 }
@@ -1255,6 +1303,12 @@ label a {
     object-fit: cover;
     margin-right: 14px;
     border-radius: 5px;
+}
+
+.order-product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .order-product-info p {
@@ -1351,17 +1405,19 @@ label a {
 .price-total {
     display: flex;
     flex-direction: column;
+    margin: 10px;
 }
 
 .price-total .thanhtien {
     color: #808080;
-    font-size: 13px;
+    font-size: 20px;
+    margin-bottom: 10px;
 }
 
 .price-total .price {
     color: var(--red);
     font-weight: 500;
-    font-size: 16px;
+    font-size: 18px;
     color: #ffe066;
 }
 
@@ -2024,7 +2080,7 @@ label a {
 .phieu-item {
     display: flex;
     gap: 15px;
-    align-items: end;
+    align-items: flex-start; /* align items at top so product/select block lines up with other fields */
     margin-bottom: 15px;
     padding: 15px;
     background: rgba(255, 255, 255, 0.1);
@@ -2109,6 +2165,7 @@ label a {
 
 /* Modal phiếu nhập hàng */
 .modal.add-phieu-nhap .modal-container {
+    margin-top: 70px;
     width: 90%;
     max-width: 900px;
     max-height: 90vh;
@@ -2133,7 +2190,6 @@ label a {
 
 .add-phieu-form .form-control {
     width: 100%;
-    padding: 12px 16px;
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.95);
@@ -2149,14 +2205,17 @@ label a {
     background: #fff;
 }
 
-.add-phieu-form .form-control.error {
+.add-phieu-form .form-control.error,
+.add-phieu-form .form-control:invalid:not(:placeholder-shown) {
     border-color: #e74c3c;
-    background: rgba(231, 76, 60, 0.05);
+    background: #fff;
 }
 
-.add-phieu-form .form-control.error:focus {
+.add-phieu-form .form-control.error:focus,
+.add-phieu-form .form-control:invalid:not(:placeholder-shown):focus {
     border-color: #e74c3c;
     box-shadow: 0 0 10px rgba(231, 76, 60, 0.4);
+    background: #fff;
 }
 
 /* Container cho danh sách items */

@@ -82,6 +82,10 @@
         min-width: 140px;
         height: 110px;
     }
+
+    .btn-check {
+        font-size: 12px;
+    }
 }
 
 @media only screen and (max-width: 615px) {
@@ -90,9 +94,10 @@
         width: 70%;
         flex-direction: column;
         position:fixed;
-        background-color: #fff;
+        /* background-color: #fff; */
         z-index: 99;
         box-shadow: 0 1px 5px 0 rgb(0 0 0 / 20%);
+        background-image: url("../img/admin/background.jpg");
     }
     
     .sidebar .hidden-sidebar {

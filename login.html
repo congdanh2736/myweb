@@ -5,192 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập / Đăng ký - Mì Cay 7749</title>
     <link href='./assets/img/micay7749.png' rel='icon' type='image/x-icon' />
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            background: url('./assets/img/admin/background.jpg') no-repeat center center fixed;
-            background-size: cover;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        .login-container {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 500px;
-            text-align: center;
-            animation: slideIn 0.5s ease-out;
-        
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .login-container h2 {
-            margin-bottom: 15px;
-            color: #333;
-            font-size: 28px;
-            font-weight: 600;
-        }
-
-        .tab-buttons {
-            display: flex;
-            margin-bottom: 10px;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 10px;
-            background: #ddd;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
-        }
-
-        .tab-btn.active {
-            background: #B5292F;
-            color: white;
-        }
-
-        .login-container .logo {
-            margin-bottom: 20px;
-        }
-
-        .login-container .logo img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-        }
-
-        .form-list {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .form-list .two-form-group {
-            margin: 25px;
-        }
-
-        .form-group {
-            margin-bottom: 10px;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 500;
-            font-size: 16px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: #B5292F;
-            box-shadow: 0 0 0 3px rgba(185, 41, 47, 0.1);
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #B5292F 0%, #ff6b35 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s;
-            margin-top: 0px;
-        }
-
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(185, 41, 47, 0.4);
-        }
-
-        .login-btn:active {
-            transform: translateY(0);
-        }
-
-        #login-error {
-            color: #e74c3c;
-            margin-top: 15px;
-            font-size: 14px;
-            min-height: 20px;
-            background: #ffe6e6;
-            padding: 8px 12px;
-            border-radius: 5px;
-            border-left: 3px solid #e74c3c;
-            display: none;
-        }
-
-        #login-error:not(:empty) {
-            display: block;
-        }
-
-        .back-link {
-            margin-top: 20px;
-            color: #B5292F;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        
-        /* Style cho input invalid */
-        .form-control:invalid:not(:placeholder-shown) {
-            border-color: #e74c3c;
-        }
-        
-        .form-control:valid:not(:placeholder-shown) {
-            border-color: #27ae60;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <link rel="stylesheet" href="./assets/css/login.css">
 </head>
 <body>
     <div class="login-container">
-        <div class="logo">
-            <img src="./assets/img/micay7749.png" alt="Mì Cay 7749 Logo">
-        </div>
-        <h2>Mì cay 7749</h2>
         <div class="tab-buttons">
             <button id="login-tab" class="tab-btn active">Đăng nhập</button>
             <button id="signup-tab" class="tab-btn">Đăng ký</button>
         </div>
-        <form id="login-form">
+        <div class="logo">
+            <img src="./assets/img/micay7749.png" alt="Mì Cay 7749 Logo">
+        </div>
+        <h2>Mì cay 7749</h2>
+        <form id="login-form" class="login">
             <div class="form-group">
                 <label for="login-phone">Số điện thoại:</label>
                 <input type="tel" id="login-phone" name="phone" class="form-control" required 
@@ -209,48 +36,44 @@
             </div>
             <button type="submit" class="login-btn">Đăng nhập</button>
         </form>
-        <form id="signup-form" style="display: none;">
-            <div class="form-list">  
-                <div class="two-form-group">
-                    <div class="form-group">
-                        <label for="signup-fullname">Tên đầy đủ:</label>
-                        <input type="text" id="signup-fullname" name="fullname" class="form-control" required 
-                               placeholder="VD: Nguyễn Văn A"
-                               minlength="3"
-                               maxlength="50"
-                               title="Họ tên phải có từ 3-50 ký tự">
-                    </div>
-                    <div class="form-group">
-                        <label for="signup-phone">Số điện thoại:</label>
-                        <input type="tel" id="signup-phone" name="phone" class="form-control" required 
-                               placeholder="Nhập số điện thoại (10 số)"
-                               pattern="0[0-9]{9}"
-                               maxlength="10"
-                               title="Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0">
-                    </div>
+        <form id="signup-form" style="display: none;" class="sign-up">
+            <div class="form-inputs-grid">
+                <div class="form-group">
+                    <label for="signup-fullname">Tên đầy đủ:</label>
+                    <input type="text" id="signup-fullname" name="fullname" class="form-control" required 
+                           placeholder="VD: Nguyễn Văn A"
+                           minlength="3"
+                           maxlength="50"
+                           title="Họ tên phải có từ 3-50 ký tự">
                 </div>
-                <div class="two-form-group">
-                    <div class="form-group">
-                        <label for="signup-password">Mật khẩu:</label>
-                        <input type="password" id="signup-password" name="password" class="form-control" required 
-                               placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)"
-                               minlength="6"
-                               maxlength="32"
-                               title="Mật khẩu phải có từ 6-32 ký tự, không có khoảng trắng">
-                    </div>
-                    <div class="form-group">
-                        <label for="signup-password-confirm">Nhập lại mật khẩu:</label>
-                        <input type="password" id="signup-password-confirm" name="password_confirm" class="form-control" required 
-                               placeholder="Nhập lại mật khẩu"
-                               minlength="6"
-                               maxlength="32"
-                               title="Nhập lại mật khẩu giống với mật khẩu đã nhập">
-                    </div>
-                </div> 
+                <div class="form-group">
+                    <label for="signup-phone">Số điện thoại:</label>
+                    <input type="tel" id="signup-phone" name="phone" class="form-control" required 
+                           placeholder="Nhập số điện thoại (10 số)"
+                           pattern="0[0-9]{9}"
+                           maxlength="10"
+                           title="Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0">
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Mật khẩu:</label>
+                    <input type="password" id="signup-password" name="password" class="form-control" required 
+                           placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)"
+                           minlength="6"
+                           maxlength="32"
+                           title="Mật khẩu phải có từ 6-32 ký tự, không có khoảng trắng">
+                </div>
+                <div class="form-group">
+                    <label for="signup-password-confirm">Nhập lại mật khẩu:</label>
+                    <input type="password" id="signup-password-confirm" name="password_confirm" class="form-control" required 
+                           placeholder="Nhập lại mật khẩu"
+                           minlength="6"
+                           maxlength="32"
+                           title="Nhập lại mật khẩu giống với mật khẩu đã nhập">
+                </div>
             </div>
-            <div class="form-group">
+            <div class="form-checkbox-group">
                 <input class="checkbox" name="checkbox" required="" type="checkbox" id="checkbox-signup">
-                <label for="checkbox-signup" class="form-checkbox">Tôi đồng ý với <a href="#" title="chính sách trang web" target="_blank"> chính sách trang web </a></label>
+                <label for="checkbox-signup" class="form-checkbox">Tôi đồng ý với <a href="#" title="chính sách trang web" target="_blank">chính sách trang web</a></label>
             </div>
             <button type="submit" class="login-btn">Đăng ký</button>
         </form>
@@ -258,253 +81,6 @@
         <a href="index.html" class="back-link">← Quay lại trang chủ</a>
     </div>
 
-    <script>
-        // Kiểm tra nếu đã đăng nhập thì chuyển về trang tương ứng
-        window.onload = function() {
-            let currentUser = JSON.parse(localStorage.getItem("currentuser"));
-            if (currentUser) {
-                if (currentUser.userType == 1) {
-                    window.location.href = "admin.html";
-                } else {
-                    window.location.href = "index.html";
-                }
-            }
-        };
-
-        // Tab switching
-        document.getElementById('login-tab').addEventListener('click', function() {
-            document.getElementById('login-form').style.display = 'block';
-            document.getElementById('signup-form').style.display = 'none';
-            this.classList.add('active');
-            document.getElementById('signup-tab').classList.remove('active');
-        });
-
-        document.getElementById('signup-tab').addEventListener('click', function() {
-            document.getElementById('login-form').style.display = 'none';
-            document.getElementById('signup-form').style.display = 'block';
-            this.classList.add('active');
-            document.getElementById('login-tab').classList.remove('active');
-        });
-
-        // Xử lý form đăng nhập
-        document.getElementById("login-form").addEventListener("submit", function(e) {
-            e.preventDefault();
-            
-            let phone = document.getElementById("login-phone").value.trim();
-            let password = document.getElementById("login-password").value;
-            let errorDiv = document.getElementById("login-error");
-            
-            errorDiv.textContent = "";
-            
-            // Validation đăng nhập
-            if (!phone) {
-                errorDiv.textContent = "Vui lòng nhập số điện thoại!";
-                return;
-            }
-            if (phone.length !== 10 || !/^\d{10}$/.test(phone)) {
-                errorDiv.textContent = "Số điện thoại phải có đúng 10 chữ số!";
-                return;
-            }
-            if (!password) {
-                errorDiv.textContent = "Vui lòng nhập mật khẩu!";
-                return;
-            }
-            if (password.length < 6) {
-                errorDiv.textContent = "Mật khẩu phải có ít nhất 6 ký tự!";
-                return;
-            }
-            
-            // Lấy danh sách tài khoản
-            let accounts = JSON.parse(localStorage.getItem("accounts")) || [];
-            
-            // Tìm tài khoản khớp
-            let user = accounts.find(acc => acc.phone === phone && acc.password === password);
-            
-            if (user && (user.userType == 1 || user.userType === "1")) {
-                // Không cho phép đăng nhập admin từ trang này
-                errorDiv.textContent = "Tài khoản hoặc mật khẩu sai!";
-                errorDiv.style.color = "#ff6b35";
-                return;
-            } else if (user && (user.userType == 0 || user.userType === "0")) {
-                // Đăng nhập thành công user thường
-                localStorage.setItem("currentuser", JSON.stringify(user));
-                window.location.href = "index.html";
-            } else {
-                // Đăng nhập thất bại
-                errorDiv.textContent = "Số điện thoại hoặc mật khẩu không đúng!";
-            }
-        });
-
-        // Xử lý form đăng ký
-        document.getElementById("signup-form").addEventListener("submit", function(e) {
-            e.preventDefault();
-            
-            let fullname = document.getElementById("signup-fullname").value.trim();
-            let phone = document.getElementById("signup-phone").value.trim();
-            let password = document.getElementById("signup-password").value;
-            let passwordConfirm = document.getElementById("signup-password-confirm").value;
-            let checkbox = document.getElementById("checkbox-signup").checked;
-            let errorDiv = document.getElementById("login-error");
-            
-            errorDiv.textContent = "";
-            
-            // Validation chi tiết
-            // 1. Kiểm tra họ tên
-            if (!fullname) {
-                errorDiv.textContent = "Vui lòng nhập họ tên!";
-                return;
-            }
-            if (fullname.length < 3) {
-                errorDiv.textContent = "Họ tên phải có ít nhất 3 ký tự!";
-                return;
-            }
-            if (fullname.length > 50) {
-                errorDiv.textContent = "Họ tên không được vượt quá 50 ký tự!";
-                return;
-            }
-            if (!/^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵýỷỹ\s]+$/.test(fullname)) {
-                errorDiv.textContent = "Họ tên chỉ được chứa chữ cái và khoảng trắng!";
-                return;
-            }
-            
-            // 2. Kiểm tra số điện thoại
-            if (!phone) {
-                errorDiv.textContent = "Vui lòng nhập số điện thoại!";
-                return;
-            }
-            if (phone.length !== 10) {
-                errorDiv.textContent = "Số điện thoại phải có đúng 10 chữ số!";
-                return;
-            }
-            if (!/^\d{10}$/.test(phone)) {
-                errorDiv.textContent = "Số điện thoại chỉ được chứa chữ số!";
-                return;
-            }
-            if (!phone.startsWith('0')) {
-                errorDiv.textContent = "Số điện thoại phải bắt đầu bằng số 0!";
-                return;
-            }
-            
-            // 3. Kiểm tra mật khẩu
-            if (!password) {
-                errorDiv.textContent = "Vui lòng nhập mật khẩu!";
-                return;
-            }
-            if (password.length < 6) {
-                errorDiv.textContent = "Mật khẩu phải có ít nhất 6 ký tự!";
-                return;
-            }
-            if (password.length > 32) {
-                errorDiv.textContent = "Mật khẩu không được vượt quá 32 ký tự!";
-                return;
-            }
-            if (password.includes(' ')) {
-                errorDiv.textContent = "Mật khẩu không được chứa khoảng trắng!";
-                return;
-            }
-            
-            // 4. Kiểm tra xác nhận mật khẩu
-            if (!passwordConfirm) {
-                errorDiv.textContent = "Vui lòng xác nhận mật khẩu!";
-                return;
-            }
-            if (password !== passwordConfirm) {
-                errorDiv.textContent = "Mật khẩu xác nhận không khớp!";
-                return;
-            }
-            
-            // 5. Kiểm tra checkbox chính sách
-            if (!checkbox) {
-                errorDiv.textContent = "Bạn phải đồng ý với chính sách trang web!";
-                return;
-            }
-            
-            // Lấy danh sách tài khoản
-            let accounts = JSON.parse(localStorage.getItem("accounts")) || [];
-            
-            // Kiểm tra trùng lặp
-            let existingUser = accounts.find(acc => acc.phone === phone);
-            if (existingUser) {
-                errorDiv.textContent = "Số điện thoại đã được đăng ký!";
-                return;
-            }
-            
-            // Tạo tài khoản mới
-            let newUser = {
-                fullname: fullname,
-                phone: phone,
-                password: password,
-                address: '',
-                email: '',
-                status: 1,
-                join: new Date(),
-                cart: [],
-                userType: 0 // User thường
-            };
-            
-            accounts.push(newUser);
-            localStorage.setItem("accounts", JSON.stringify(accounts));
-            localStorage.setItem("currentuser", JSON.stringify(newUser));
-            
-            // Hiển thị thông báo thành công
-            errorDiv.style.color = "#27ae60";
-            errorDiv.style.background = "#e6ffe6";
-            errorDiv.style.borderLeft = "3px solid #27ae60";
-            errorDiv.textContent = "Đăng ký thành công! Đang chuyển hướng...";
-            
-            // Chuyển đến trang chủ sau 1 giây
-            setTimeout(function() {
-                window.location.href = "index.html";
-            }, 1000);
-        });
-
-        // Thêm event listener để kiểm tra số điện thoại khi nhập
-        document.getElementById("signup-phone").addEventListener("input", function(e) {
-            // Chỉ cho phép nhập số
-            this.value = this.value.replace(/[^0-9]/g, '');
-            // Giới hạn 10 số
-            if (this.value.length > 10) {
-                this.value = this.value.slice(0, 10);
-            }
-        });
-
-        document.getElementById("login-phone").addEventListener("input", function(e) {
-            // Chỉ cho phép nhập số
-            this.value = this.value.replace(/[^0-9]/g, '');
-            // Giới hạn 10 số
-            if (this.value.length > 10) {
-                this.value = this.value.slice(0, 10);
-            }
-        });
-
-        // Xóa thông báo lỗi khi người dùng bắt đầu nhập
-        document.querySelectorAll('.form-control').forEach(function(input) {
-            input.addEventListener("input", function() {
-                let errorDiv = document.getElementById("login-error");
-                errorDiv.textContent = "";
-            });
-        });
-
-        // Kiểm tra khớp mật khẩu real-time
-        document.getElementById("signup-password-confirm").addEventListener("input", function() {
-            let password = document.getElementById("signup-password").value;
-            let confirmPassword = this.value;
-            let errorDiv = document.getElementById("login-error");
-            
-            if (confirmPassword && password !== confirmPassword) {
-                errorDiv.style.color = "#e74c3c";
-                errorDiv.style.background = "#ffe6e6";
-                errorDiv.style.borderLeft = "3px solid #e74c3c";
-                errorDiv.textContent = "Mật khẩu xác nhận chưa khớp!";
-            } else if (confirmPassword && password === confirmPassword) {
-                errorDiv.style.color = "#27ae60";
-                errorDiv.style.background = "#e6ffe6";
-                errorDiv.style.borderLeft = "3px solid #27ae60";
-                errorDiv.textContent = "Mật khẩu khớp!";
-            } else {
-                errorDiv.textContent = "";
-            }
-        });
-    </script>
+    <script src="./js/login.js"></script>
 </body>
 </html>

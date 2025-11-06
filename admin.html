@@ -212,7 +212,7 @@
                                 <td>Liên hệ</td>
                                 <td>Ngày tham gia</td>
                                 <td>Tình trạng</td>
-                                <td></td>
+                                <td>Sửa / Xoá</td>
                             </tr>
                         </thead>
                         <tbody id="show-user">
@@ -524,7 +524,12 @@
                     </div>
                     <div class="form-group">
                         <label for="password" class="form-label">Mật khẩu</label>
-                        <input id="password" name="password" type="text" placeholder="Nhập mật khẩu" class="form-control">
+                        <div class="password-input-wrapper">
+                            <input id="password" name="password" type="password" placeholder="Nhập mật khẩu" class="form-control">
+                            <button type="button" class="toggle-password-btn" id="toggle-password-admin">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
                         <span class="form-message-password form-message"></span>
                     </div>
                     <div class="form-group">

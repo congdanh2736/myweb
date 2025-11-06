@@ -604,6 +604,133 @@ function createAdminAccount() {
     }
 }
 
+// Khởi tạo 10 khách hàng mẫu
+function createSampleCustomers() {
+    let accounts = JSON.parse(localStorage.getItem("accounts")) || [];
+    
+    // Kiểm tra xem đã có khách hàng mẫu chưa (bằng cách check phone của khách hàng đầu tiên)
+    let hasSampleCustomers = accounts.some(acc => acc.phone === "0901234567" && acc.userType == 0);
+    
+    if (!hasSampleCustomers) {
+        const sampleCustomers = [
+            {
+                fullname: "Nguyễn Văn An",
+                phone: "0901234567",
+                password: "123456",
+                address: "123 Đường Lê Lợi, Quận 1, TP.HCM",
+                email: "nguyenvanan@gmail.com",
+                status: 1,
+                join: new Date("2024-01-15"),
+                cart: [],
+                userType: 0
+            },
+            {
+                fullname: "Trần Thị Bích",
+                phone: "0912345678",
+                password: "123456",
+                address: "456 Đường Nguyễn Huệ, Quận 1, TP.HCM",
+                email: "tranthbich@gmail.com",
+                status: 1,
+                join: new Date("2024-02-20"),
+                cart: [],
+                userType: 0
+            },
+            {
+                fullname: "Lê Minh Cường",
+                phone: "0923456789",
+                password: "123456",
+                address: "789 Đường Trần Hưng Đạo, Quận 5, TP.HCM",
+                email: "leminhcuong@gmail.com",
+                status: 1,
+                join: new Date("2024-03-10"),
+                cart: [],
+                userType: 0
+            },
+            {
+                fullname: "Phạm Thị Dung",
+                phone: "0934567890",
+                password: "123456",
+                address: "321 Đường Hai Bà Trưng, Quận 3, TP.HCM",
+                email: "phamthidung@gmail.com",
+                status: 1,
+                join: new Date("2024-04-05"),
+                cart: [],
+                userType: 0
+            },
+            {
+                fullname: "Hoàng Văn Em",
+                phone: "0945678901",
+                password: "123456",
+                address: "654 Đường Lý Thường Kiệt, Quận 10, TP.HCM",
+                email: "hoangvanem@gmail.com",
+                status: 1,
+                join: new Date("2024-05-12"),
+                cart: [],
+                userType: 0
+            },
+            {
+                fullname: "Đỗ Thị Phượng",
+                phone: "0956789012",
+                password: "123456",
+                address: "987 Đường Cách Mạng Tháng 8, Quận Tân Bình, TP.HCM",
+                email: "dothiphuong@gmail.com",
+                status: 1,
+                join: new Date("2024-06-18"),
+                cart: [],
+                userType: 0
+            },
+            {
+                fullname: "Vũ Minh Giang",
+                phone: "0967890123",
+                password: "123456",
+                address: "159 Đường Võ Văn Tần, Quận 3, TP.HCM",
+                email: "vuminggiang@gmail.com",
+                status: 1,
+                join: new Date("2024-07-25"),
+                cart: [],
+                userType: 0
+            },
+            {
+                fullname: "Bùi Thị Hà",
+                phone: "0978901234",
+                password: "123456",
+                address: "753 Đường Điện Biên Phủ, Quận Bình Thạnh, TP.HCM",
+                email: "buithiha@gmail.com",
+                status: 1,
+                join: new Date("2024-08-30"),
+                cart: [],
+                userType: 0
+            },
+            {
+                fullname: "Ngô Văn Ích",
+                phone: "0989012345",
+                password: "123456",
+                address: "852 Đường Xô Viết Nghệ Tĩnh, Quận Bình Thạnh, TP.HCM",
+                email: "ngovanich@gmail.com",
+                status: 1,
+                join: new Date("2024-09-14"),
+                cart: [],
+                userType: 0
+            },
+            {
+                fullname: "Đinh Thị Kim",
+                phone: "0990123456",
+                password: "123456",
+                address: "147 Đường Nguyễn Thị Minh Khai, Quận 1, TP.HCM",
+                email: "dinhthikim@gmail.com",
+                status: 1,
+                join: new Date("2024-10-20"),
+                cart: [],
+                userType: 0
+            }
+        ];
+        
+        // Thêm khách hàng mẫu vào accounts
+        accounts = accounts.concat(sampleCustomers);
+        localStorage.setItem('accounts', JSON.stringify(accounts));
+    }
+}
+
 // Khi cập nhật lợi nhuận của category, cập nhật lại lợi nhuận cho tất cả sản phẩm thuộc category đó
 function updateProfitForCategory(categoryId, newProfit) {
     let products = JSON.parse(localStorage.getItem('products')) || [];
@@ -620,12 +747,516 @@ function updateProfitForCategory(categoryId, newProfit) {
 
 // Khởi tạo phiếu nhập hàng
 function createPhieuNhap() {
-    if (localStorage.getItem('phieuNhap') == null) {
-        let phieuNhap = [];
+    // Kiểm tra xem đã có phiếu nhập mẫu chưa
+    let phieuNhap = JSON.parse(localStorage.getItem('phieuNhap')) || [];
+    let hasSamplePhieuNhap = phieuNhap.some(phieu => phieu.id === "PN001");
+    
+    if (!hasSamplePhieuNhap) {
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        
+        if (products.length === 0) {
+            console.warn('⚠️ Không có sản phẩm để tạo phiếu nhập hàng. Vui lòng tạo sản phẩm trước.');
+            return;
+        }
+        
+        console.log('📦 Đang tạo 10 phiếu nhập hàng mẫu...');
+        
+        // Lấy danh sách sản phẩm để nhập
+        let availableProducts = products.slice(0, Math.min(15, products.length));
+        
+        // Tạo 10 phiếu nhập hàng với dữ liệu đa dạng
+        let samplePhieuNhap = [
+            {
+                id: "PN001",
+                ngayNhap: new Date(2024, 9, 1).toISOString(), // 01/10/2024
+                status: 1, // Đã hoàn thành
+                items: [
+                    { sanPhamId: availableProducts[0]?.id, giaNhap: 20000, soLuong: 50 },
+                    { sanPhamId: availableProducts[1]?.id, giaNhap: 18000, soLuong: 40 },
+                    { sanPhamId: availableProducts[2]?.id, giaNhap: 25000, soLuong: 30 }
+                ]
+            },
+            {
+                id: "PN002",
+                ngayNhap: new Date(2024, 9, 5).toISOString(), // 05/10/2024
+                status: 1, // Đã hoàn thành
+                items: [
+                    { sanPhamId: availableProducts[3]?.id, giaNhap: 15000, soLuong: 60 },
+                    { sanPhamId: availableProducts[4]?.id, giaNhap: 22000, soLuong: 45 },
+                    { sanPhamId: availableProducts[5]?.id, giaNhap: 12000, soLuong: 80 }
+                ]
+            },
+            {
+                id: "PN003",
+                ngayNhap: new Date(2024, 9, 10).toISOString(), // 10/10/2024
+                status: 1, // Đã hoàn thành
+                items: [
+                    { sanPhamId: availableProducts[6]?.id, giaNhap: 28000, soLuong: 35 },
+                    { sanPhamId: availableProducts[7]?.id, giaNhap: 16000, soLuong: 55 },
+                    { sanPhamId: availableProducts[8]?.id, giaNhap: 20000, soLuong: 40 },
+                    { sanPhamId: availableProducts[9]?.id, giaNhap: 14000, soLuong: 70 }
+                ]
+            },
+            {
+                id: "PN004",
+                ngayNhap: new Date(2024, 9, 15).toISOString(), // 15/10/2024
+                status: 1, // Đã hoàn thành
+                items: [
+                    { sanPhamId: availableProducts[0]?.id, giaNhap: 21000, soLuong: 45 },
+                    { sanPhamId: availableProducts[2]?.id, giaNhap: 24000, soLuong: 35 },
+                    { sanPhamId: availableProducts[4]?.id, giaNhap: 23000, soLuong: 40 }
+                ]
+            },
+            {
+                id: "PN005",
+                ngayNhap: new Date(2024, 9, 20).toISOString(), // 20/10/2024
+                status: 1, // Đã hoàn thành
+                items: [
+                    { sanPhamId: availableProducts[10]?.id, giaNhap: 17000, soLuong: 50 },
+                    { sanPhamId: availableProducts[11]?.id, giaNhap: 19000, soLuong: 45 },
+                    { sanPhamId: availableProducts[12]?.id, giaNhap: 13000, soLuong: 65 }
+                ]
+            },
+            {
+                id: "PN006",
+                ngayNhap: new Date(2024, 9, 25).toISOString(), // 25/10/2024
+                status: 1, // Đã hoàn thành
+                items: [
+                    { sanPhamId: availableProducts[1]?.id, giaNhap: 19000, soLuong: 55 },
+                    { sanPhamId: availableProducts[3]?.id, giaNhap: 16000, soLuong: 60 },
+                    { sanPhamId: availableProducts[5]?.id, giaNhap: 11000, soLuong: 75 },
+                    { sanPhamId: availableProducts[7]?.id, giaNhap: 15000, soLuong: 50 }
+                ]
+            },
+            {
+                id: "PN007",
+                ngayNhap: new Date(2024, 10, 1).toISOString(), // 01/11/2024
+                status: 1, // Đã hoàn thành
+                items: [
+                    { sanPhamId: availableProducts[13]?.id, giaNhap: 26000, soLuong: 30 },
+                    { sanPhamId: availableProducts[14]?.id, giaNhap: 18000, soLuong: 40 }
+                ]
+            },
+            {
+                id: "PN008",
+                ngayNhap: new Date(2024, 10, 5).toISOString(), // 05/11/2024
+                status: 0, // Chưa hoàn thành
+                items: [
+                    { sanPhamId: availableProducts[6]?.id, giaNhap: 27000, soLuong: 38 },
+                    { sanPhamId: availableProducts[8]?.id, giaNhap: 21000, soLuong: 42 },
+                    { sanPhamId: availableProducts[10]?.id, giaNhap: 16000, soLuong: 48 }
+                ]
+            },
+            {
+                id: "PN009",
+                ngayNhap: new Date(2024, 10, 10).toISOString(), // 10/11/2024
+                status: 0, // Chưa hoàn thành
+                items: [
+                    { sanPhamId: availableProducts[0]?.id, giaNhap: 22000, soLuong: 50 },
+                    { sanPhamId: availableProducts[4]?.id, giaNhap: 24000, soLuong: 35 },
+                    { sanPhamId: availableProducts[8]?.id, giaNhap: 19000, soLuong: 45 },
+                    { sanPhamId: availableProducts[12]?.id, giaNhap: 14000, soLuong: 60 }
+                ]
+            },
+            {
+                id: "PN010",
+                ngayNhap: new Date(2024, 10, 15).toISOString(), // 15/11/2024
+                status: 0, // Chưa hoàn thành
+                items: [
+                    { sanPhamId: availableProducts[2]?.id, giaNhap: 26000, soLuong: 32 },
+                    { sanPhamId: availableProducts[5]?.id, giaNhap: 13000, soLuong: 70 },
+                    { sanPhamId: availableProducts[9]?.id, giaNhap: 15000, soLuong: 55 }
+                ]
+            }
+        ];
+        
+        // Lọc bỏ các items có sanPhamId undefined (trường hợp không đủ sản phẩm)
+        samplePhieuNhap.forEach(phieu => {
+            phieu.items = phieu.items.filter(item => item.sanPhamId !== undefined);
+        });
+        
+        // Lọc bỏ các phiếu không có items
+        samplePhieuNhap = samplePhieuNhap.filter(phieu => phieu.items.length > 0);
+        
+        // Thêm vào localStorage
+        phieuNhap = [...phieuNhap, ...samplePhieuNhap];
         localStorage.setItem('phieuNhap', JSON.stringify(phieuNhap));
+        
+        console.log(`✅ Đã tạo thành công ${samplePhieuNhap.length} phiếu nhập hàng mẫu (PN001 - PN0${samplePhieuNhap.length.toString().padStart(2, '0')})`);
+        console.log('📊 Thống kê:');
+        console.log('   - Phiếu đã hoàn thành:', samplePhieuNhap.filter(p => p.status === 1).length);
+        console.log('   - Phiếu chưa hoàn thành:', samplePhieuNhap.filter(p => p.status === 0).length);
+    }
+}
+
+// Khởi tạo 10 đánh giá mẫu cho mỗi sản phẩm
+function createSampleReviews() {
+    let productReviews = JSON.parse(localStorage.getItem('productReviews')) || {};
+    
+    // Kiểm tra xem đã có đánh giá mẫu chưa
+    let hasSampleReviews = Object.keys(productReviews).length > 0;
+    
+    if (!hasSampleReviews) {
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        let accounts = JSON.parse(localStorage.getItem('accounts')) || [];
+        
+        // Lọc ra khách hàng (userType == 0)
+        let customers = accounts.filter(acc => acc.userType == 0);
+        
+        if (products.length === 0 || customers.length === 0) {
+            console.warn('⚠️ Không có sản phẩm hoặc khách hàng để tạo đánh giá mẫu.');
+            return;
+        }
+        
+        console.log('⭐ Đang tạo 10 đánh giá mẫu cho mỗi sản phẩm...');
+        
+        // Danh sách bình luận mẫu theo rating
+        let commentTemplates = {
+            5: [
+                'Sản phẩm tuyệt vời! Rất ngon và đúng vị. Sẽ quay lại đặt thêm.',
+                'Cực kỳ hài lòng! Chất lượng vượt mong đợi, giao hàng nhanh.',
+                'Ngon quá trời! Đúng khẩu vị của tôi. Recommend 100%!',
+                'Xuất sắc! Gia vị đậm đà, mì dai ngon. Rất đáng tiền.',
+                'Tuyệt vời! Phần ăn nhiều, giá cả hợp lý. 5 sao không cần suy nghĩ.',
+                'Quá tuyệt vời! Đóng gói cẩn thận, đồ ăn còn nóng khi nhận.',
+                'Rất hài lòng! Vị ngon, lượng nhiều, ship nhanh. Sẽ ủng hộ dài dài.',
+                'Chất lượng tốt! Mì dai, nước lẩu đậm đà, rau tươi ngon.',
+                'Cực kì ngon! Đúng như mô tả, sẽ giới thiệu cho bạn bè.',
+                'Hoàn hảo! Từ chất lượng đến dịch vụ đều rất tốt. Recommend!'
+            ],
+            4: [
+                'Món ăn ngon, nhưng hơi cay so với khẩu vị của tôi.',
+                'Khá ổn, chất lượng tốt nhưng phần ăn hơi ít.',
+                'Ngon! Nhưng giao hàng hơi chậm một chút.',
+                'Rất tốt! Nước lẩu đậm đà, mì dai. Trừ 1 sao do hơi nhiều dầu.',
+                'Chất lượng tốt, giá cả hợp lý. Sẽ đặt lại.',
+                'Ngon! Đóng gói cẩn thận. Nên thêm rau củ sẽ ngon hơn.',
+                'Khá ổn, vị ngon nhưng hơi nhạt so với mong đợi.',
+                'Tốt! Mì dai, nước dùng đậm đà. Chỉ có giá hơi cao.',
+                'Ngon! Phần ăn vừa đủ, chất lượng tốt. Sẽ ủng hộ tiếp.',
+                'Rất tốt! Đồ ăn ngon, đóng gói đẹp. Chỉ có ship hơi lâu.'
+            ],
+            3: [
+                'Bình thường, không đặc sắc lắm.',
+                'Tạm được, giá hơi cao so với chất lượng.',
+                'Ổn thôi, không ngon lắm nhưng cũng không tệ.',
+                'Trung bình, vị hơi nhạt không đậm đà như mong đợi.',
+                'Tạm ổn, chất lượng bình thường, không có gì nổi bật.',
+                'Được, nhưng cần cải thiện về phần ăn và gia vị.',
+                'Tạm chấp nhận được, vị không hợp khẩu vị lắm.',
+                'Bình thường, đồ ăn ổn nhưng không có điểm nhấn.',
+                'Tạm được, nhưng giá hơi mắc so với chất lượng.',
+                'Không tệ lắm, nhưng cũng không đủ để đặt lại lần 2.'
+            ],
+            2: [
+                'Không được như mong đợi. Vị hơi nhạt.',
+                'Hơi thất vọng, chất lượng không tốt lắm.',
+                'Không ngon, mì bị nát, nước lẩu quá nhạt.',
+                'Chưa hài lòng lắm, đồ ăn nguội khi nhận.',
+                'Không ưng lắm, gia vị không đúng khẩu vị.',
+                'Thất vọng, phần ăn ít, chất lượng kém.',
+                'Không tốt, nước dùng quá mặn, mì không dai.',
+                'Chưa được như kỳ vọng, cần cải thiện nhiều.',
+                'Không hài lòng, đồ ăn không tươi, thiếu gia vị.',
+                'Kém, giá mắc nhưng chất lượng không xứng đáng.'
+            ],
+            1: [
+                'Rất tệ! Không ngon, sẽ không đặt lại.',
+                'Thất vọng hoàn toàn! Chất lượng quá kém.',
+                'Tệ! Đồ ăn không tươi, nước lẩu quá mặn.',
+                'Không đáng tiền! Chất lượng tệ, giao hàng chậm.',
+                'Quá tệ! Mì bị nát, rau héo, không ăn được.',
+                'Không chấp nhận được! Hoàn toàn không như mô tả.',
+                'Rất kém! Gia vị không đúng, đồ ăn nguội lạnh.',
+                'Thất vọng! Phần ăn ít, chất lượng quá tệ.',
+                'Tệ nhất! Không khuyên ai nên đặt.',
+                'Hoàn toàn không hài lòng! Chất lượng quá kém.'
+            ]
+        };
+        
+        // Tạo đánh giá cho từng sản phẩm
+        let reviewCount = 0;
+        products.forEach(product => {
+            productReviews[product.id] = [];
+            
+            // Tạo 10 đánh giá cho mỗi sản phẩm
+            for (let i = 0; i < 10; i++) {
+                // Random rating (tập trung ở 4-5 sao để sản phẩm trông tốt hơn)
+                let ratingDistribution = [5, 5, 5, 5, 5, 4, 4, 4, 3, 2]; // 50% 5 sao, 30% 4 sao, 10% 3 sao, 10% 2 sao
+                let rating = ratingDistribution[i];
+                
+                // Random khách hàng
+                let customer = customers[Math.floor(Math.random() * customers.length)];
+                
+                // Random comment theo rating
+                let comments = commentTemplates[rating];
+                let comment = comments[Math.floor(Math.random() * comments.length)];
+                
+                // Random ngày (từ 30 ngày trước đến hôm nay)
+                let daysAgo = Math.floor(Math.random() * 30);
+                let reviewDate = new Date();
+                reviewDate.setDate(reviewDate.getDate() - daysAgo);
+                
+                productReviews[product.id].push({
+                    userId: customer.phone,
+                    rating: rating,
+                    comment: comment,
+                    date: reviewDate.toISOString()
+                });
+                
+                reviewCount++;
+            }
+        });
+        
+        // Lưu vào localStorage
+        localStorage.setItem('productReviews', JSON.stringify(productReviews));
+        
+        console.log(`✅ Đã tạo thành công ${reviewCount} đánh giá mẫu cho ${products.length} sản phẩm`);
+        console.log(`📊 Trung bình ${reviewCount / products.length} đánh giá/sản phẩm`);
+    }
+}
+
+// Khởi tạo 10 đơn hàng mẫu
+function createSampleOrders() {
+    let orders = JSON.parse(localStorage.getItem("order")) || [];
+    let orderDetails = JSON.parse(localStorage.getItem("orderDetails")) || [];
+    
+    // Kiểm tra xem đã có đơn hàng mẫu chưa
+    let hasSampleOrders = orders.some(order => order.id === "DH001");
+    
+    if (!hasSampleOrders) {
+        let accounts = JSON.parse(localStorage.getItem('accounts')) || [];
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        
+        // Lọc ra các khách hàng mẫu (không phải admin) - lấy tất cả khách hàng thường
+        let sampleCustomers = accounts.filter(acc => acc.userType == 0);
+        
+        console.log('Số lượng khách hàng tìm thấy:', sampleCustomers.length);
+        
+        if (sampleCustomers.length >= 10 && products.length > 0) {
+            // Tạo 10 đơn hàng với các trạng thái khác nhau
+            // Status: 0 = Chưa xử lý, 1 = Đã hoàn thành, 2 = Đã hủy
+            let sampleOrdersData = [
+                {
+                    id: "DH001",
+                    customerIndex: 0,
+                    products: [
+                        { productId: 1, quantity: 2 },
+                        { productId: 5, quantity: 1 }
+                    ],
+                    deliveryMethod: "Giao tận nơi",
+                    deliveryTime: "Giao ngay khi xong",
+                    note: "Cho ít cay",
+                    status: 1, // Đã hoàn thành
+                    daysAgo: 1
+                },
+                {
+                    id: "DH002",
+                    customerIndex: 1,
+                    products: [
+                        { productId: 3, quantity: 1 },
+                        { productId: 15, quantity: 2 }
+                    ],
+                    deliveryMethod: "Giao tận nơi",
+                    deliveryTime: "Giao vào 18:00 - 20:00",
+                    note: "Gọi điện trước khi đến",
+                    status: 0, // Chưa xử lý
+                    daysAgo: 0
+                },
+                {
+                    id: "DH003",
+                    customerIndex: 2,
+                    products: [
+                        { productId: 7, quantity: 1 },
+                        { productId: 8, quantity: 1 },
+                        { productId: 16, quantity: 1 }
+                    ],
+                    deliveryMethod: "Tự đến lấy",
+                    deliveryTime: "Giao ngay khi xong",
+                    note: "",
+                    status: 1, // Đã hoàn thành
+                    daysAgo: 3
+                },
+                {
+                    id: "DH004",
+                    customerIndex: 3,
+                    products: [
+                        { productId: 2, quantity: 3 },
+                        { productId: 14, quantity: 2 }
+                    ],
+                    deliveryMethod: "Giao tận nơi",
+                    deliveryTime: "Giao vào 12:00 - 14:00",
+                    note: "Không hành",
+                    status: 1, // Đã hoàn thành
+                    daysAgo: 5
+                },
+                {
+                    id: "DH005",
+                    customerIndex: 4,
+                    products: [
+                        { productId: 10, quantity: 2 },
+                        { productId: 11, quantity: 2 }
+                    ],
+                    deliveryMethod: "Giao tận nơi",
+                    deliveryTime: "Giao ngay khi xong",
+                    note: "Cho thêm rau sống",
+                    status: 0, // Chưa xử lý
+                    daysAgo: 0
+                },
+                {
+                    id: "DH006",
+                    customerIndex: 5,
+                    products: [
+                        { productId: 6, quantity: 1 },
+                        { productId: 17, quantity: 3 }
+                    ],
+                    deliveryMethod: "Tự đến lấy",
+                    deliveryTime: "Giao vào 18:00 - 20:00",
+                    note: "",
+                    status: 1, // Đã hoàn thành
+                    daysAgo: 7
+                },
+                {
+                    id: "DH007",
+                    customerIndex: 6,
+                    products: [
+                        { productId: 4, quantity: 2 },
+                        { productId: 9, quantity: 1 },
+                        { productId: 15, quantity: 1 }
+                    ],
+                    deliveryMethod: "Giao tận nơi",
+                    deliveryTime: "Giao ngay khi xong",
+                    note: "Cho cay nhiều",
+                    status: 0, // Chưa xử lý
+                    daysAgo: 0
+                },
+                {
+                    id: "DH008",
+                    customerIndex: 7,
+                    products: [
+                        { productId: 12, quantity: 1 },
+                        { productId: 13, quantity: 1 }
+                    ],
+                    deliveryMethod: "Giao tận nơi",
+                    deliveryTime: "Giao vào 12:00 - 14:00",
+                    note: "Đổi đá riêng",
+                    status: 1, // Đã hoàn thành
+                    daysAgo: 10
+                },
+                {
+                    id: "DH009",
+                    customerIndex: 8,
+                    products: [
+                        { productId: 1, quantity: 1 },
+                        { productId: 3, quantity: 1 },
+                        { productId: 16, quantity: 2 }
+                    ],
+                    deliveryMethod: "Tự đến lấy",
+                    deliveryTime: "Giao ngay khi xong",
+                    note: "",
+                    status: 2, // Đã hủy
+                    daysAgo: 12
+                },
+                {
+                    id: "DH010",
+                    customerIndex: 9,
+                    products: [
+                        { productId: 5, quantity: 2 },
+                        { productId: 14, quantity: 1 },
+                        { productId: 17, quantity: 2 }
+                    ],
+                    deliveryMethod: "Giao tận nơi",
+                    deliveryTime: "Giao vào 18:00 - 20:00",
+                    note: "Giao tầng 3",
+                    status: 1, // Đã hoàn thành
+                    daysAgo: 2
+                }
+            ];
+            
+            // Tạo các đơn hàng
+            sampleOrdersData.forEach(orderData => {
+                if (orderData.customerIndex < sampleCustomers.length) {
+                    let customer = sampleCustomers[orderData.customerIndex];
+                    console.log(`Đang tạo đơn hàng ${orderData.id} cho khách hàng:`, customer.fullname);
+                    
+                    // Tính ngày đặt hàng
+                    let orderDate = new Date();
+                    orderDate.setDate(orderDate.getDate() - orderData.daysAgo);
+                    
+                    // Tính ngày giao hàng
+                    let deliveryDate = new Date(orderDate);
+                    if (orderData.status >= 2) {
+                        deliveryDate.setDate(deliveryDate.getDate() + 1);
+                    }
+                    
+                    // Tính tổng tiền
+                    let totalAmount = 0;
+                    orderData.products.forEach(item => {
+                        let product = products.find(p => p.id === item.productId);
+                        if (product) {
+                            totalAmount += product.price * item.quantity;
+                        }
+                    });
+                    
+                    // Thêm phí vận chuyển nếu giao tận nơi
+                    if (orderData.deliveryMethod === "Giao tận nơi") {
+                        totalAmount += 30000;
+                    }
+                    
+                    // Tạo đơn hàng
+                    let order = {
+                        id: orderData.id,
+                        khachhang: customer.phone,
+                        hinhthucgiao: orderData.deliveryMethod,
+                        ngaygiaohang: deliveryDate.toString(),
+                        thoigiangiao: orderData.deliveryTime,
+                        ghichu: orderData.note,
+                        tenguoinhan: customer.fullname,
+                        sdtnhan: customer.phone,
+                        diachinhan: customer.address,
+                        thoigiandat: orderDate,
+                        tongtien: totalAmount,
+                        trangthai: orderData.status
+                    };
+                    
+                    orders.push(order);
+                    
+                    // Tạo chi tiết đơn hàng
+                    orderData.products.forEach(item => {
+                        let product = products.find(p => p.id === item.productId);
+                        if (product) {
+                            let orderDetail = {
+                                madon: orderData.id,
+                                id: product.id,
+                                title: product.title,
+                                img: product.img,
+                                soluong: item.quantity,
+                                price: product.price
+                            };
+                            orderDetails.push(orderDetail);
+                        }
+                    });
+                } else {
+                    console.warn(`Bỏ qua đơn hàng ${orderData.id}: không đủ khách hàng (cần index ${orderData.customerIndex}, chỉ có ${sampleCustomers.length} khách hàng)`);
+                }
+            });
+            
+            localStorage.setItem('order', JSON.stringify(orders));
+            localStorage.setItem('orderDetails', JSON.stringify(orderDetails));
+            console.log(`Đã tạo ${orders.length} đơn hàng mẫu thành công!`);
+        } else {
+            console.warn('Không đủ điều kiện để tạo đơn hàng mẫu:', {
+                customersCount: sampleCustomers.length,
+                productsCount: products.length
+            });
+        }
     }
 }
 
 window.onload = createCategory();
 window.onload = createProduct();
 window.onload = createAdminAccount();
+window.onload = createSampleCustomers();
+window.onload = createPhieuNhap();
+window.onload = createSampleReviews();
+window.onload = createSampleOrders();

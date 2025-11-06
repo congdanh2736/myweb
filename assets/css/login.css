@@ -1,0 +1,343 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: url('../img/admin/background.jpg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.login-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+    animation: slideIn 0.5s ease-out;
+    overflow: hidden;
+    position: relative;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-container h2 {
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.tab-buttons {
+    display: flex;
+    margin-bottom: 20px;
+    position: relative;
+    border-radius: 15px 15px 0 0;
+    overflow: hidden;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 15px;
+    background: rgba(221, 221, 221, 0.5);
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.tab-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    transition: 0.6s;
+}
+
+.tab-btn:hover::before {
+    left: 100%;
+}
+
+.tab-btn.active {
+    background: #B5292F;
+    color: white;
+    transform: scale(1.03);
+    box-shadow: 0 5px 15px rgba(181, 41, 47, 0.3);
+}
+
+.login-container .logo {
+    margin-bottom: 20px;
+}
+
+.login-container .logo img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+}
+
+#login-form, #signup-form {
+    padding: 20px;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+#signup-form .form-group {
+    margin-bottom: 15px;
+}
+
+#signup-form .form-inputs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    height: 40px;
+}
+
+#login-form .form-group {
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #B5292F;
+    box-shadow: 0 0 0 3px rgba(185, 41, 47, 0.1);
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #B5292F 0%, #ff6b35 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+    margin-top: 0px;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(185, 41, 47, 0.4);
+}
+
+.login-btn:active {
+    transform: translateY(0);
+}
+
+#login-error {
+    color: #e74c3c;
+    margin-top: 15px;
+    font-size: 14px;
+    min-height: 20px;
+    background: #ffe6e6;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border-left: 3px solid #e74c3c;
+    display: none;
+}
+
+#login-error:not(:empty) {
+    display: block;
+}
+
+.back-link {
+    margin-top: 20px;
+    color: #B5292F;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+/* Style cho input invalid */
+.form-control:invalid:not(:placeholder-shown) {
+    border-color: #e74c3c;
+}
+
+.form-control:valid:not(:placeholder-shown) {
+    border-color: #27ae60;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.form-checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.form-checkbox-group .checkbox {
+    width: auto;
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.form-checkbox-group .form-checkbox {
+    margin: 0;
+    font-size: 14px;
+    color: #555;
+    cursor: pointer;
+}
+
+.form-checkbox-group .form-checkbox a {
+    color: #B5292F;
+    text-decoration: none;
+}
+
+.form-checkbox-group .form-checkbox a:hover {
+    text-decoration: underline;
+}
+
+/* Form switching animations */
+#login-form, #signup-form {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+#signup-form {
+    display: none;
+}
+
+#login-form {
+    display: block;
+}
+#login-form, #signup-form {
+    width: 100%;
+    padding: 0 25px;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#signup-form {
+    display: none;
+}
+
+#login-form {
+    display: block;
+}
+
+/* Enhanced form animations */
+.form-control {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: left;
+}
+
+.form-control:focus {
+    transform: scale(1.02);
+}
+
+.login-btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.login-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    transition: 0.6s;
+}
+
+.login-btn:hover::before {
+    left: 100%;
+}
+
+.form-group {
+    transform: translateY(0);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-group:hover {
+    transform: translateY(-2px);
+}
+
+/* Error message animation */
+#login-error {
+    animation: shakeError 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+@keyframes shakeError {
+    10%, 90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+    20%, 80% {
+        transform: translate3d(2px, 0, 0);
+    }
+    30%, 50%, 70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+    40%, 60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}

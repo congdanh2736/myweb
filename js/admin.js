@@ -422,14 +422,35 @@ function generateDailyReport() {
     let orderDetails = localStorage.getItem("orderDetails") ? JSON.parse(localStorage.getItem("orderDetails")) : [];
     let phieuNhap = localStorage.getItem("phieuNhap") ? JSON.parse(localStorage.getItem("phieuNhap")) : [];
 
+    // Tính tổng số lượng đã xuất (đơn hoàn thành) và đang chờ (đơn pending)
+    let totalExported = 0;
+    let totalPending = 0;
+    orders.forEach(order => {
+        if (order.trangthai == 1) { // Đơn đã hoàn thành
+            orderDetails.forEach(detail => {
+                if (detail.madon == order.id && detail.id == productId) {
+                    totalExported += parseInt(detail.soluong);
+                }
+            });
+        } else if (order.trangthai == 0) { // Đơn đang chờ
+            orderDetails.forEach(detail => {
+                if (detail.madon == order.id && detail.id == productId) {
+                    totalPending += parseInt(detail.soluong);
+                }
+            });
+        }
+    });
+
+    // Tồn kho thực tế hiện tại = soluong (đã bao gồm tất cả nhập) - tổng xuất - tổng pending
     let baseStock = parseInt(product.soluong) || 0;
+    let currentActualStock = baseStock - totalExported - totalPending;
+    
     let reportList = document.getElementById("daily-report-list");
     reportList.innerHTML = "";
 
     // Tạo danh sách ngày
     let currentDate = new Date(startDate);
     let end = new Date(endDate);
-    let cumulativeImported = 0;
     let cumulativeExported = 0;
 
     while (currentDate <= end) {
@@ -463,12 +484,12 @@ function generateDailyReport() {
             }
         });
 
-        // Cập nhật tích lũy
-        cumulativeImported += dailyImported;
+        // Cập nhật tích lũy xuất
         cumulativeExported += dailyExported;
 
-        // Tính stock cuối ngày
-        let dailyStock = baseStock + cumulativeImported - cumulativeExported;
+        // Tính stock cuối ngày = Tồn kho thực tế hiện tại - xuất lũy kế (chưa đến ngày hiện tại)
+        // Hoặc đơn giản: baseStock - tổng xuất đến ngày này
+        let dailyStock = baseStock - cumulativeExported - totalPending;
 
         // Tạo item báo cáo
         let reportItem = document.createElement("div");
@@ -764,7 +785,7 @@ function detailOrder(id) {
                 <img src="${detaiSP.img}" alt="">
                 <div class="order-product-info">
                     <h4>${detaiSP.title}</h4>
-                    <p class="order-product-note"><i class="fas fa-pen"></i> ${item.note}</p>
+                    <p class="order-product-note"><i class="fas fa-pen"></i> ${item.note || 'Không có ghi chú'}</p>
                     <p class="order-product-quantity">SL: ${item.soluong}<p>
                 </div>
             </div>
@@ -804,7 +825,7 @@ function detailOrder(id) {
             </li>
             <li class="detail-order-item tb">
                 <span class="detail-order-item-t"><i class="fas fa-note-sticky"></i> Ghi chú</span>
-                <p class="detail-order-item-b">${order.ghichu}</p>
+                <p class="detail-order-item-b">${order.ghichu || 'Không có ghi chú'}</p>
             </li>
         </ul>
     </div>`;
@@ -1124,6 +1145,22 @@ document.getElementById('password').addEventListener('input', function() {
     let formMessagePassword = document.querySelector('.form-message-password');
     if (formMessagePassword) {
         formMessagePassword.innerHTML = '';
+    }
+});
+
+// Toggle password visibility
+document.getElementById('toggle-password-admin').addEventListener('click', function() {
+    let passwordInput = document.getElementById('password');
+    let icon = this.querySelector('i');
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        passwordInput.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
     }
 });
 
