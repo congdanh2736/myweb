@@ -75,7 +75,7 @@ body::-webkit-scrollbar-thumb {
 
 body {
     margin: 0;
-    font-family: "SF Pro Display", sans-serif;
+    font-family: sans-serif;
     overflow-x: hidden;
     background: url('../img/admin/background.jpg') no-repeat center center;
     background-size: cover;
@@ -435,6 +435,8 @@ body,input,button,textarea,pre {
 }
 
 .sidebar-link {
+    /* margin-bottom: 5px;
+    margin-top: 5px; */
     display: flex;
     width: 100%;
     padding: 0.5rem 0;
@@ -447,6 +449,7 @@ body,input,button,textarea,pre {
     transition: 0.3s ease;
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
+
     
 }
 
@@ -457,6 +460,8 @@ body,input,button,textarea,pre {
 }
 
 .sidebar-list-item {
+    margin-top: 5px;
+    margin-bottom: 5px;
     margin-left: 20px;
     position: relative;
     width: 100%;
@@ -466,14 +471,15 @@ body,input,button,textarea,pre {
 }
 
 .sidebar-list-item.active {
-    color: var(--red);
-    background-color: var(--lightest-gray);
+    color: var(--more-yellow);
+    background-color: var(--red);
+    border: solid 1px var(--more-yellow);
 }
 
-.sidebar-list-item:hover {
+/* .sidebar-list-item:hover {
     background-color: rgb(255, 255, 255);
     color: #ffe066; 
-}
+} */
 
 .sidebar-list-item.active::before {
     content: "";
@@ -1507,8 +1513,8 @@ label a {
     background-color: #95a5a6;
     color: #fff;
     padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 15px;
+    border-radius: 12px;
+    font-size: 12px;
     display: inline-block;
 }
 

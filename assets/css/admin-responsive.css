@@ -1,25 +1,29 @@
 :root {
-    --red: #B5292F;
+    --red: #960f0f;
+    --light-red: #bd2929;
+    --yellow: #d8b543;
+    --more-yellow: #f4fc00;
     --lightest-gray: rgb(249, 249, 249);
+    --text-dark: #333;
 }
 
 .page-title {
-    color: var(--lightest-gray);
-    background-color: var(--red);
+    color: var(--yellow);
+    background: linear-gradient(135deg, var(--red) 0%, var(--light-red) 100%);
     text-align: center;
     border-radius: 2rem;
-    padding: 0.5rem;
+    padding: 1rem;
     text-transform: uppercase;
+    font-weight: bold;
+    border: 2px solid var(--yellow);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    margin-bottom: 1.5rem;
 }
 
 @media only screen and (max-width: 2000px) {
     .admin-control-center {
         margin: 1rem -1rem;
         width: 25rem;
-    }
-
-    select{
-        margin-bottom: 10px;
     }
 
     #tinh-trang,.form-control-date {
@@ -60,6 +64,15 @@
 
     .cards{
         flex-wrap: wrap;
+    }
+}
+
+@media only screen and (max-width: 1068) {
+    .admin-control {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 10px;
     }
 }
 
