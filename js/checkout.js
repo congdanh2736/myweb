@@ -312,9 +312,15 @@ function xulyDathang(product) {
             return;
         }
     }
+
+    if (!tt1.checked && !tt2.checked && !tt3.checked) {
+        toast({ title: 'Chú ý', message: 'Vui lòng chọn phương thức thanh toán!', type: 'warning', duration: 4000 });
+        return; // Dừng thực thi hàm nếu chưa chọn phương thức thanh toán
+    }
     
     if (!giaongay.checked && !giaovaogio.checked) {
         toast({ title: 'Chú ý', message: 'Vui lòng chọn thời gian giao hàng!', type: 'warning', duration: 4000 });
+        return;
     }
 
     // Thoi gian nhan hang
@@ -467,10 +473,7 @@ completeCheckoutBtn.addEventListener('click', () => {
     let ward = document.getElementById("ward");
 
     // Kiểm tra phương thức thanh toán
-    if (!tt1 && !tt2 && !tt3) {
-        toast({ title: 'Chú ý', message: 'Vui lòng chọn phương thức thanh toán!', type: 'warning', duration: 4000 });
-        return; // Dừng thực thi hàm nếu chưa chọn phương thức thanh toán
-    }
+    
 
     // Các kiểm tra khác...
     // ...existing code...
