@@ -312,12 +312,10 @@ function xulyDathang(product) {
             return;
         }
     }
-
-    if (!tt1 && !tt2 && !tt3) {
-        toast({ title: 'Chú ý', message: 'Vui lòng chọn phương thức thanh toán!', type: 'warning', duration: 4000 });
-        return;
+    
+    if (!giaongay.checked && !giaovaogio.checked) {
+        toast({ title: 'Chú ý', message: 'Vui lòng chọn thời gian giao hàng!', type: 'warning', duration: 4000 });
     }
-
 
     // Thoi gian nhan hang
     if(giaongay.checked) {
@@ -353,7 +351,7 @@ function xulyDathang(product) {
 
     // Validation chi tiết
     if(tennguoinhan == "" || sdtnhan == "" || diachinhan == "") {
-        toast({ title: 'Chú ý', message: 'Vui lòng nhập đầy đủ thông tin !', type: 'warning', duration: 4000 });
+        toast({ title: 'Chú ý', message: 'Vui lòng nhập đầy đủ thông tin người nhận!', type: 'warning', duration: 4000 });
         return;
     }
     
