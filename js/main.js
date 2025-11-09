@@ -239,8 +239,8 @@ function detailProduct(event, index) {
             </div>
         </div>
         <div class="reviews-content">
-            ${renderReviews(infoProduct.id)}
             ${renderReviewForm(infoProduct.id)}
+            ${renderReviews(infoProduct.id)}
         </div>
     </div>
     <div class="modal-footer">
@@ -1260,8 +1260,42 @@ function searchProducts(mode) {
     let valueCategory = document.getElementById("advanced-search-category-select").value;
     let minPrice = document.getElementById("min-price").value;
     let maxPrice = document.getElementById("max-price").value;
+    
+    // Validate giá min và max
+    let minPriceInput = document.getElementById("min-price");
+    let maxPriceInput = document.getElementById("max-price");
+    
+    // Xóa class error cũ
+    minPriceInput.classList.remove('input-error');
+    maxPriceInput.classList.remove('input-error');
+    
     if(parseInt(minPrice) > parseInt(maxPrice) && minPrice != "" && maxPrice != "") {
-        alert("Giá đã nhập sai !");
+        // Thêm class error cho cả 2 input
+        minPriceInput.classList.add('input-error');
+        maxPriceInput.classList.add('input-error');
+        
+        // Hiển thị thông báo đẹp
+        toast({ 
+            title: 'Lỗi nhập liệu', 
+            message: 'Giá tối thiểu không được lớn hơn giá tối đa!', 
+            type: 'error', 
+            duration: 4000 
+        });
+        return; // Dừng tìm kiếm
+    }
+    
+    // Validate số âm
+    if((minPrice != "" && parseInt(minPrice) < 0) || (maxPrice != "" && parseInt(maxPrice) < 0)) {
+        if(parseInt(minPrice) < 0) minPriceInput.classList.add('input-error');
+        if(parseInt(maxPrice) < 0) maxPriceInput.classList.add('input-error');
+        
+        toast({ 
+            title: 'Lỗi nhập liệu', 
+            message: 'Giá không được là số âm!', 
+            type: 'error', 
+            duration: 4000 
+        });
+        return;
     }
 
     // Lấy ID của category từ tên để filter
@@ -1295,6 +1329,8 @@ function searchProducts(mode) {
             document.getElementById("advanced-search-category-select").value = "Tất cả";
             document.getElementById("min-price").value = "";
             document.getElementById("max-price").value = "";
+            minPriceInput.classList.remove('input-error');
+            maxPriceInput.classList.remove('input-error');
             break;
         case 1:
             result.sort((a,b) => a.price - b.price)
@@ -1327,6 +1363,25 @@ function showHomeProduct(products) {
 
 window.onload = showHomeProduct(JSON.parse(localStorage.getItem('products')))
 window.onload = renderCategoryMenu();
+
+// Thêm event listener cho validation real-time của bộ lọc giá
+document.addEventListener('DOMContentLoaded', function() {
+    let minPriceInput = document.getElementById("min-price");
+    let maxPriceInput = document.getElementById("max-price");
+    
+    if (minPriceInput && maxPriceInput) {
+        // Xóa class error khi người dùng bắt đầu nhập
+        minPriceInput.addEventListener('input', function() {
+            this.classList.remove('input-error');
+            maxPriceInput.classList.remove('input-error');
+        });
+        
+        maxPriceInput.addEventListener('input', function() {
+            this.classList.remove('input-error');
+            minPriceInput.classList.remove('input-error');
+        });
+    }
+});
 
 function setupPagination(productAll, perPage, currentPage) {
     document.querySelector('.page-nav-list').innerHTML = '';
@@ -1815,8 +1870,61 @@ function submitReview(productId) {
     
     toast({ title: 'Thành công', message: 'Đánh giá của bạn đã được gửi thành công!', type: 'success', duration: 3000 });
     
-    // Refresh modal để hiển thị đánh giá mới
-    setTimeout(() => {
-        detailProduct(productId);
-    }, 500);
+    // Cập nhật lại phần reviews trong modal ngay lập tức
+    let reviewsContent = document.querySelector('.reviews-content');
+    if (reviewsContent) {
+        reviewsContent.innerHTML = `
+            ${renderReviewForm(productId)}
+            ${renderReviews(productId)}
+        `;
+        
+        // Cập nhật lại rating summary trong header
+        let ratingHeader = document.querySelector('.reviews-header .rating-summary');
+        if (ratingHeader) {
+            ratingHeader.innerHTML = `
+                <div class="average-rating">
+                    ${generateStarDisplay(Math.round(calculateAverageRating(productId)))}
+                    <span class="rating-number">${calculateAverageRating(productId).toFixed(1)}</span>
+                </div>
+                <span class="review-count">(${getReviewCount(productId)} đánh giá)</span>
+            `;
+        }
+        
+        // Gắn lại event listener cho form mới (nếu người dùng có thể đánh giá nhiều lần)
+        setupReviewEventListeners(productId);
+    }
+    
+    // Cập nhật rating trên card sản phẩm ở trang chủ
+    updateProductCardRating(productId);
+}
+
+// Hàm cập nhật rating trên card sản phẩm trang chủ
+function updateProductCardRating(productId) {
+    // Tìm tất cả các card sản phẩm có productId này
+    let productCards = document.querySelectorAll(`.card-product`);
+    
+    productCards.forEach(card => {
+        // Kiểm tra xem card này có phải là sản phẩm cần cập nhật không
+        let cardLinks = card.querySelectorAll(`[onclick*="detailProduct(event, ${productId})"]`);
+        
+        if (cardLinks.length > 0) {
+            // Tìm phần product-rating trong card này
+            let ratingDiv = card.querySelector('.product-rating');
+            if (ratingDiv) {
+                let avgRating = calculateAverageRating(productId);
+                let reviewCount = getReviewCount(productId);
+                
+                // Cập nhật nội dung rating
+                if (avgRating > 0) {
+                    ratingDiv.innerHTML = `
+                        ${generateStarDisplay(Math.round(avgRating))}
+                        <span class="rating-score">${avgRating.toFixed(1)}</span>
+                        <span class="rating-count">(${reviewCount})</span>
+                    `;
+                } else {
+                    ratingDiv.innerHTML = `<span class="no-rating">Chưa có đánh giá</span>`;
+                }
+            }
+        }
+    });
 }

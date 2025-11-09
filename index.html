@@ -110,9 +110,15 @@
             </div>
             <div class="advanced-search-price">
                 <span>Giá từ</span>
-                <input type="number" placeholder="tối thiểu" id="min-price" onchange="searchProducts()">
+                <div class="price-input-wrapper">
+                    <input type="number" placeholder="tối thiểu" id="min-price" onchange="searchProducts()">
+                    <span class="price-suffix">vnd</span>
+                </div>
                 <span>đến</span>
-                <input type="number" placeholder="tối đa" id="max-price" onchange="searchProducts()">
+                <div class="price-input-wrapper">
+                    <input type="number" placeholder="tối đa" id="max-price" onchange="searchProducts()">
+                    <span class="price-suffix">vnd</span>
+                </div>
                 <button id="advanced-search-price-btn"><i class="fa-solid fa-magnifying-glass-dollar"></i></button>
             </div>
             <div class="advanced-search-control">

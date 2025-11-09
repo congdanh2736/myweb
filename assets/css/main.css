@@ -862,15 +862,60 @@ header {
     align-items: center;
 }
 
+/* Wrapper cho input giá với suffix VND */
+.price-input-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.price-input-wrapper .price-suffix {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--red);
+    font-size: 13px;
+    font-weight: 600;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    text-transform: uppercase;
+}
+
+.price-input-wrapper input:not(:placeholder-shown) ~ .price-suffix,
+.price-input-wrapper input:focus ~ .price-suffix {
+    opacity: 1;
+}
+
 .advanced-search-price input{
     border: none;
     outline: none;
     height: 35px;
     width: 140px;
     padding: 0 10px;
+    padding-right: 45px; /* Để chừa chỗ cho "vnd" */
     background-color: #f0f0f0;
     border-radius: 5px;
     color: var(--red);
+    transition: all 0.3s ease;
+}
+
+.advanced-search-price input:focus {
+    background-color: #fff;
+    box-shadow: 0 0 0 2px var(--yellow);
+}
+
+.advanced-search-price input.input-error {
+    background-color: #ffe6e6;
+    border: 2px solid #ff4444;
+    box-shadow: 0 0 8px rgba(255, 68, 68, 0.3);
+    animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
 }
 
 .advanced-search span{
@@ -4282,6 +4327,8 @@ input[type=number] {
     border-radius: 8px;
     padding: 15px;
     background: linear-gradient(135deg, #fff8f5 0%, #fff5f0 100%);
+    margin-bottom: 20px;
+    margin-right: 5px;
 }
 
 .review-form h4 {

@@ -1002,8 +1002,19 @@ function thongKe(mode) {
         return;
     }
     let arrDetail = createObj();
+    
+    // Chuyển đổi tên category thành ID để so sánh
+    let categoryIdMapping = JSON.parse(localStorage.getItem('categoryIdMapping')) || {};
+    let categoryId = categoryIdMapping[categoryTk];
+    
+    console.log('🔍 Thống kê - Debug:');
+    console.log('Selected category name:', categoryTk);
+    console.log('Category ID mapping:', categoryIdMapping);
+    console.log('Resolved category ID:', categoryId);
+    console.log('All items:', arrDetail.map(item => ({ title: item.title, category: item.category })));
+    
     let result = categoryTk == "Tất cả" ? arrDetail : arrDetail.filter((item) => {
-        return item.category == categoryTk;
+        return item.category == categoryId;
     });
 
     result = ct == "" ? result : result.filter((item) => {
