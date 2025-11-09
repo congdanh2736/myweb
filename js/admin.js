@@ -552,15 +552,13 @@ btnUpdateProductIn.addEventListener("click", (e) => {
     console.log('Category ID mapping:', categoryIdMapping);
     console.log('Resolved category ID:', categoryId);
 
-    if (parseInt(curProductCur) <= 0) {
-        toast({ title: "Warning", message: "Giá gốc phải lớn hơn 0!", type: "warning", duration: 3000, });
-    } else if (parseInt(loinhuanProductCur) <= 0) {
-        toast({ title: "Warning", message: "Lợi nhuận phải lớn hơn 0!", type: "warning", duration: 3000, });
-    } else if (parseInt(loinhuanProductCur) > 1) {
-        toast({ title: "Warning", message: "Lợi nhuận phải nhỏ hơn hoặc bằng 1!", type: "warning", duration: 3000, });
-    }
-
-    else if (imgProductCur != imgProduct || titleProductCur != titleProduct || curProductCur != curProduct || descProductCur != descProduct || categoryId != categoryProduct || loinhuanProductCur != loinhuanProduct) {
+    if (isNaN(curProductCur) || parseFloat(curProductCur) <= 0) {
+        toast({ title: "Warning", message: "Giá gốc phải lớn hơn 0!", type: "warning", duration: 3000 });
+    } else if (isNaN(loinhuanProductCur) || parseFloat(loinhuanProductCur) <= 0) {
+        toast({ title: "Warning", message: "Lợi nhuận phải lớn hơn 0!", type: "warning", duration: 3000 });
+    } else if (parseFloat(loinhuanProductCur) > 1) {
+        toast({ title: "Warning", message: "Lợi nhuận phải nhỏ hơn hoặc bằng 1!", type: "warning", duration: 3000 });
+    } else if (imgProductCur != imgProduct || titleProductCur != titleProduct || curProductCur != curProduct || descProductCur != descProduct || categoryId != categoryProduct || loinhuanProductCur != loinhuanProduct) {
         let rawPrice = parseInt(curProductCur) + parseInt(curProductCur) * parseFloat(loinhuanProductCur);
         // làm tròn đến 1000 gần nhất
         let finalPrice = Math.round(rawPrice / 1000) * 1000;
