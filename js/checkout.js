@@ -286,44 +286,15 @@ function xulyDathang(product) {
     let giaongay = document.querySelector("#giaongay");
     let giaovaogio = document.querySelector("#deliverytime");
     let currentUser = JSON.parse(localStorage.getItem('currentuser'));
+    let tt1 = document.querySelector("#thanhtoan-1")
+    let tt2 = document.querySelector("#thanhtoan-2")
+    let tt3 = document.querySelector("#thanhtoan-3")
     // Hinh thuc giao & Dia chi nhan hang
     if(giaotannoi.classList.contains("active")) {
         diachinhan = document.querySelector("#diachinhan").value;
         hinhthucgiao = giaotannoi.innerText;
     }
     if(tudenlay.classList.contains("active")){
-        // let chinhanh1 = document.querySelector('#ward option[value="91 Lý Tự Trọng, Phường Bến Thành"]').selected;
-        // let chinhanh2 = document.querySelector('#ward option[value="01 Công trường Công xã Paris, Phường Bến Nghé"]').selected;
-        // let chinhanh3 = document.querySelector('#ward option[value="273 An Dương Vương, Phường Chợ Quán"]').selected;
-        // let chinhanh4 = document.querySelector('#ward option[value="25 Đ. Học Lạc, Phường 14"]').selected;
-        // let chinhanh5 = document.querySelector('#ward option[value="1 Tràng Tiền, Phan Chu Trinh"]').selected;
-        // let chinhanh6 = document.querySelector('#ward option[value="57B Đinh Tiên Hoàng, Hàng Bạc"]').selected;
-        // let chinhanh7 = document.querySelector('#ward option[value="157 Đội Cấn"]').selected;
-        // let chinhanh8 = document.querySelector('#ward option[value="43 Đ. Nguyễn Chí Thanh, Giảng Võ"]').selected;
-        // if(chinhanh1) {
-        //     diachinhan = "91 Lý Tự Trọng, Phường Bến Thành, Quận 1, TP Hồ Chí Minh";
-        // }
-        // if(chinhanh2) {
-        //     diachinhan = "01 Công trường Công xã Paris, Phường Bến Nghé, Quận 1, TP Hồ Chí Minh";
-        // }
-        // if(chinhanh3) {
-        //     diachinhan = "273 An Dương Vương, Phường Chợ Quán, Quận 5, TP Hồ Chí Minh";
-        // }
-        // if(chinhanh4) {
-        //     diachinhan = "25 Đ. Học Lạc, Phường 14, Quận 5, TP Hồ Chí Minh";
-        // }
-        // if(chinhanh5) {
-        //     diachinhan = "1 Tràng Tiền, Phan Chu Trinh, Hoàn Kiếm, Hà Nội";
-        // }
-        // if(chinhanh6) {
-        //     diachinhan = "57B Đinh Tiên Hoàng, Hàng Bạc, Hoàn Kiếm, Hà Nội";
-        // }
-        // if(chinhanh7) {
-        //     diachinhan = "157 Đội Cấn, Ba Đình, Hà Nội";
-        // }
-        // if(chinhanh8) {
-        //     diachinhan = "43 Đ. Nguyễn Chí Thanh, Giảng Võ, Ba Đình Hà Nội";
-        // }
         const wardSelect = document.getElementById("ward");
         const districtSelect = document.getElementById("district")
         const citySelect = document.getElementById("city")
@@ -335,7 +306,18 @@ function xulyDathang(product) {
         }
         diachinhan = wardSelect.value + ", " + districtSelect.value + ", " + cityName;
         hinhthucgiao = tudenlay.innerText;
+
+        if (wardSelect.value == "") {
+            toast({ title: 'Chú ý', message: 'Vui lòng chọn địa chỉ nhận hàng!', type: 'warning', duration: 4000 });
+            return;
+        }
     }
+
+    if (!tt1 && !tt2 && !tt3) {
+        toast({ title: 'Chú ý', message: 'Vui lòng chọn phương thức thanh toán!', type: 'warning', duration: 4000 });
+        return;
+    }
+
 
     // Thoi gian nhan hang
     if(giaongay.checked) {
@@ -425,7 +407,7 @@ function xulyDathang(product) {
         localStorage.setItem("orderDetails",JSON.stringify(orderDetails));
         toast({ title: 'Thành công', message: 'Đặt hàng thành công !', type: 'success', duration: 1000 });
         setTimeout((e)=>{
-            window.location = "/";
+            window.location = "index.html";
         },2000);  
     }
 }
@@ -470,4 +452,28 @@ document.addEventListener('DOMContentLoaded', function() {
             this.value = this.value.trim().replace(/\s+/g, ' ');
         });
     }
+});
+
+const completeCheckoutBtn = document.querySelector('.complete-checkout-btn');
+completeCheckoutBtn.addEventListener('click', () => {
+    let orders = localStorage.getItem("order") ? JSON.parse(localStorage.getItem("order")) : [];
+    let giaongayCheck = document.getElementById("giaongay");
+    let deliverytimeCheck = document.getElementById("deliverytime");
+    let tt1 = document.getElementById("thanhtoan-1").checked;
+    let tt2 = document.getElementById("thanhtoan-2").checked; 
+    let tt3 = document.getElementById("thanhtoan-3").checked;
+    let tennguoinhan = document.getElementById("tennguoinhan").value;
+    let sdtnhan = document.getElementById("sdtnhan").value;
+    let diachinhan = document.getElementById("diachinhan").value;
+    let tudenlay = document.getElementById("tudenlay");
+    let ward = document.getElementById("ward");
+
+    // Kiểm tra phương thức thanh toán
+    if (!tt1 && !tt2 && !tt3) {
+        toast({ title: 'Chú ý', message: 'Vui lòng chọn phương thức thanh toán!', type: 'warning', duration: 4000 });
+        return; // Dừng thực thi hàm nếu chưa chọn phương thức thanh toán
+    }
+
+    // Các kiểm tra khác...
+    // ...existing code...
 });

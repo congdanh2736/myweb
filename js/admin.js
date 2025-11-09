@@ -552,7 +552,15 @@ btnUpdateProductIn.addEventListener("click", (e) => {
     console.log('Category ID mapping:', categoryIdMapping);
     console.log('Resolved category ID:', categoryId);
 
-    if (imgProductCur != imgProduct || titleProductCur != titleProduct || curProductCur != curProduct || descProductCur != descProduct || categoryId != categoryProduct || loinhuanProductCur != loinhuanProduct) {
+    if (parseInt(curProductCur) <= 0) {
+        toast({ title: "Warning", message: "Giá gốc phải lớn hơn 0!", type: "warning", duration: 3000, });
+    } else if (parseInt(loinhuanProductCur) <= 0) {
+        toast({ title: "Warning", message: "Lợi nhuận phải lớn hơn 0!", type: "warning", duration: 3000, });
+    } else if (parseInt(loinhuanProductCur) > 1) {
+        toast({ title: "Warning", message: "Lợi nhuận phải nhỏ hơn hoặc bằng 1!", type: "warning", duration: 3000, });
+    }
+
+    else if (imgProductCur != imgProduct || titleProductCur != titleProduct || curProductCur != curProduct || descProductCur != descProduct || categoryId != categoryProduct || loinhuanProductCur != loinhuanProduct) {
         let rawPrice = parseInt(curProductCur) + parseInt(curProductCur) * parseFloat(loinhuanProductCur);
         // làm tròn đến 1000 gần nhất
         let finalPrice = Math.round(rawPrice / 1000) * 1000;
@@ -2229,15 +2237,18 @@ function updateFeedbackBadge() {
     let unreadCount = feedbacks.filter(fb => fb.status === 'unread').length;
     
     let badge = document.getElementById('feedback-unread-badge');
+
     if (badge) {
         if (unreadCount > 0) {
             badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
-            badge.style.display = 'block';
+            badge.style.display = 'block'; // Always show badge if there are unread items
         } else {
-            badge.style.display = 'none';
+            badge.style.display = 'none'; // Hide badge if no unread items
         }
     }
 }
+
+updateFeedbackBadge();
 
 // Hiển thị mảng feedback
 function showFeedbackArr(feedbacks) {
