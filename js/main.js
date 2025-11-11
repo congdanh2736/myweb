@@ -30,20 +30,76 @@ function closeModal() {
 
 function increasingNumber(e) {
     let qty = e.parentNode.querySelector('.input-qty');
-    let stockQty = parseInt(qty.dataset.stock);
-    if (parseInt(qty.value) < stockQty) {
-        qty.value = parseInt(qty.value) + 1;
+    let stockQty = qty.dataset.stock ? parseInt(qty.dataset.stock) : parseInt(qty.max);
+    let currentValue = parseInt(qty.value);
+    
+    // Kiểm tra giá trị hợp lệ
+    if (isNaN(currentValue)) {
+        qty.value = 1;
+        currentValue = 1;
+    }
+    
+    if (isNaN(stockQty) || stockQty <= 0) {
+        stockQty = 100; // Giá trị mặc định
+    }
+    
+    if (currentValue < stockQty) {
+        qty.value = currentValue + 1;
     } else {
         qty.value = stockQty;
+    }
+    
+    // Nếu đang trong giỏ hàng, cập nhật localStorage và tổng tiền
+    let cartItem = e.closest('.cart-item');
+    if (cartItem) {
+        updateCartItemQuantity(cartItem);
     }
 }
 
 function decreasingNumber(e) {
     let qty = e.parentNode.querySelector('.input-qty');
-    if (qty.value > qty.min) {
-        qty.value = parseInt(qty.value) - 1;
+    let minQty = parseInt(qty.min) || 1;
+    let currentValue = parseInt(qty.value);
+    
+    // Kiểm tra giá trị hợp lệ
+    if (isNaN(currentValue)) {
+        qty.value = minQty;
+        currentValue = minQty;
+    }
+    
+    if (currentValue > minQty) {
+        qty.value = currentValue - 1;
     } else {
-        qty.value = qty.min;
+        qty.value = minQty;
+    }
+    
+    // Nếu đang trong giỏ hàng, cập nhật localStorage và tổng tiền
+    let cartItem = e.closest('.cart-item');
+    if (cartItem) {
+        updateCartItemQuantity(cartItem);
+    }
+}
+
+// Hàm mới để cập nhật số lượng trong giỏ hàng
+function updateCartItemQuantity(cartItem) {
+    let currentUser = JSON.parse(localStorage.getItem('currentuser'));
+    if (!currentUser || !currentUser.cart) return;
+    
+    let id = parseInt(cartItem.getAttribute("data-id"));
+    let qtyInput = cartItem.querySelector(".input-qty");
+    let newQty = parseInt(qtyInput.value);
+    
+    // Kiểm tra giá trị hợp lệ
+    if (isNaN(newQty) || newQty < 1) {
+        newQty = 1;
+        qtyInput.value = 1;
+    }
+    
+    let productInCart = currentUser.cart.find(item => item.id == id);
+    if (productInCart) {
+        productInCart.soluong = newQty;
+        localStorage.setItem('currentuser', JSON.stringify(currentUser));
+        updateCartTotal();
     }
 }
 
@@ -217,7 +273,7 @@ function detailProduct(event, index) {
             <div class="buttons_added">
                 <span class="curr-soluong">Số lượng còn: ${stockQty}</span>
                 <input class="minus is-form" type="button" value="-" onclick="decreasingNumber(this)">
-                <input class="input-qty" max="${stockQty}" min="1" name="" type="number" value="1" data-stock="${stockQty}">
+                <input class="input-qty" max="99" min="1" name="" type="number" value="1" data-stock="${stockQty}">
                 <input class="plus is-form" type="button" value="+" onclick="increasingNumber(this)">
             </div>
         </div>
@@ -268,23 +324,20 @@ function detailProduct(event, index) {
     });
 
     // Validation real-time cho số lượng
-    qty.addEventListener('input', function() {
-        let value = parseInt(this.value);
-        if (isNaN(value) || value < 1) {
-            this.value = 1;
-        } else if (value > stockQty) {
-            this.value = stockQty;
+        function updateDetailPrice() {
+            let value = parseInt(qty.value);
+            if (isNaN(value) || value < 1) {
+                qty.value = 1;
+                value = 1;
+            } else if (value > 99) {
+                qty.value = 99;
+                value = 99;
+            }
+            let price = infoProduct.price * value;
+            priceText.innerHTML = vnd(price);
         }
-    });
-    
-    qty.addEventListener('blur', function() {
-        let value = parseInt(this.value);
-        if (isNaN(value) || value < 1) {
-            this.value = 1;
-        } else if (value > stockQty) {
-            this.value = stockQty;
-        }
-    });
+        qty.addEventListener('input', updateDetailPrice);
+        qty.addEventListener('blur', updateDetailPrice);
 
     // Them san pham vao gio hang
     let productbtn = document.querySelector('.button-dat');
@@ -395,15 +448,31 @@ function addCart(index) {
         note: note
     }
     let vitri = currentuser.cart.findIndex(item => item.id == productcart.id);
+    let showLimitToast = false;
     if (vitri == -1) {
+        if (qtyValue > 99) {
+            productcart.soluong = 99;
+            showLimitToast = true;
+        }
         currentuser.cart.push(productcart);
     } else {
-        currentuser.cart[vitri].soluong = parseInt(currentuser.cart[vitri].soluong) + qtyValue;
+        let currentQty = parseInt(currentuser.cart[vitri].soluong);
+        let newQty = currentQty + qtyValue;
+        if (newQty > 99) {
+            newQty = 99;
+            showLimitToast = true;
+        }
+        currentuser.cart[vitri].soluong = newQty;
+        currentuser.cart[vitri].note = note;
     }
     localStorage.setItem('currentuser', JSON.stringify(currentuser));
     updateAmount();
     closeModal();
-    toast({ title: 'Thành công', message: 'Thêm sản phẩm vào giỏ hàng thành công!', type: 'success', duration: 3000 });
+    if (showLimitToast) {
+        toast({ title: 'Cảnh báo', message: 'Số lượng tối đa cho mỗi sản phẩm là 99. Không thể thêm vượt quá 99!', type: 'warning', duration: 4000 });
+    } else {
+        toast({ title: 'Thành công', message: 'Thêm sản phẩm vào giỏ hàng thành công!', type: 'success', duration: 3000 });
+    }
 }
 
 //Show gio hang
@@ -416,6 +485,8 @@ function showCart() {
             let productcarthtml = '';
             currentuser.cart.forEach(item => {
                 let product = getProduct(item);
+                // Luôn cho phép đặt tối đa 99 sản phẩm
+                let maxQty = 99;
                 productcarthtml += `<li class="cart-item" data-id="${product.id}">
                 <div class="cart-item-info">
                     <img src="${product.img}" class="cart-item-img">
@@ -431,7 +502,7 @@ function showCart() {
                     <button class="cart-item-delete" onclick="deleteCartItem(${product.id},this)"><i class="fa-solid fa-trash"></i>Xóa</button>
                     <div class="buttons_added">
                         <input class="minus is-form" type="button" value="-" onclick="decreasingNumber(this)">
-                        <input class="input-qty" max="100" min="1" name="" type="number" value="${product.soluong}">
+                        <input class="input-qty" max="${maxQty}" min="1" name="" type="number" value="${product.soluong}" data-stock="${maxQty}">
                         <input class="plus is-form" type="button" value="+" onclick="increasingNumber(this)">
                     </div>
                 </div>
@@ -463,7 +534,7 @@ function deleteCartItem(id, el) {
     let cartParent = el.parentNode.parentNode;
     cartParent.remove();
     let currentUser = JSON.parse(localStorage.getItem('currentuser'));
-    let vitri = currentUser.cart.findIndex(item => item.id = id)
+    let vitri = currentUser.cart.findIndex(item => item.id == id)
     currentUser.cart.splice(vitri, 1);
 
     // Nếu trống thì hiển thị giỏ hàng trống
@@ -502,10 +573,16 @@ function updateCartTotal() {
 function getCartTotal() {
     let currentUser = JSON.parse(localStorage.getItem('currentuser'));
     let tongtien = 0;
-    if (currentUser != null) {
+    if (currentUser != null && currentUser.cart) {
         currentUser.cart.forEach(item => {
             let product = getProduct(item);
-            tongtien += (parseInt(product.soluong) * parseInt(product.price));
+            if (product && product.soluong && product.price) {
+                let soluong = parseInt(product.soluong);
+                let price = parseInt(product.price);
+                if (!isNaN(soluong) && !isNaN(price)) {
+                    tongtien += soluong * price;
+                }
+            }
         });
     }
     return tongtien;
@@ -546,20 +623,50 @@ function updateAmount() {
 
 // Save Cart Info
 function saveAmountCart() {
-    let cartAmountbtn = document.querySelectorAll(".cart-item-control .is-form");
-    let listProduct = document.querySelectorAll('.cart-item');
-    let currentUser = JSON.parse(localStorage.getItem('currentuser'));
-    cartAmountbtn.forEach((btn, index) => {
-        btn.addEventListener('click', () => {
-            let id = listProduct[parseInt(index / 2)].getAttribute("data-id");
-            let productId = currentUser.cart.find(item => {
-                return item.id == id;
-            });
-            productId.soluong = parseInt(listProduct[parseInt(index / 2)].querySelector(".input-qty").value);
-            localStorage.setItem('currentuser', JSON.stringify(currentUser));
-            updateCartTotal();
-        })
+    // Gắn event listener cho input số lượng khi người dùng nhập thủ công
+    let qtyInputs = document.querySelectorAll('.cart-item .input-qty');
+    qtyInputs.forEach(input => {
+        // Xóa event listener cũ nếu có (tránh gắn nhiều lần)
+        input.removeEventListener('change', handleQtyChange);
+        input.removeEventListener('input', handleQtyInput);
+        
+        // Gắn event listener mới
+        input.addEventListener('change', handleQtyChange);
+        input.addEventListener('input', handleQtyInput);
     });
+}
+
+// Xử lý khi người dùng thay đổi số lượng (blur hoặc Enter)
+function handleQtyChange(e) {
+    let input = e.target;
+    let cartItem = input.closest('.cart-item');
+    
+    if (cartItem) {
+        let newQty = parseInt(input.value);
+        let minQty = parseInt(input.min) || 1;
+        let maxQty = parseInt(input.max) || parseInt(input.dataset.stock) || 100;
+        
+        // Validate giá trị
+        if (isNaN(newQty) || newQty < minQty) {
+            input.value = minQty;
+        } else if (newQty > maxQty) {
+            input.value = maxQty;
+            toast({ title: 'Cảnh báo', message: `Số lượng tối đa là ${maxQty}!`, type: 'warning', duration: 2000 });
+        }
+        
+        updateCartItemQuantity(cartItem);
+    }
+}
+
+// Xử lý khi người dùng đang nhập (real-time validation)
+function handleQtyInput(e) {
+    let input = e.target;
+    let value = input.value;
+    
+    // Chỉ cho phép nhập số
+    if (value && !/^\d+$/.test(value)) {
+        input.value = value.replace(/\D/g, '');
+    }
 }
 
 // Open & Close Cart
@@ -589,6 +696,28 @@ document.querySelector(".form-search-input").addEventListener("click",(e) => {
 
 function closeSearchAdvanced() {
     document.querySelector(".advanced-search").classList.toggle("open");
+        // Sau khi render xong nội dung chi tiết sản phẩm, gắn event cho input số lượng
+        setTimeout(() => {
+            let qtyInput = modal.querySelector('.input-qty');
+            let priceDisplay = modal.querySelector('.product-detail-price');
+            if (qtyInput && priceDisplay) {
+                // Hàm cập nhật giá tổng
+                function updateDetailTotal() {
+                    let qty = parseInt(qtyInput.value);
+                    if (isNaN(qty) || qty < 1) qty = 1;
+                    if (qty > 99) qty = 99;
+                    qtyInput.value = qty;
+                    // Lấy giá sản phẩm
+                    let products = JSON.parse(localStorage.getItem('products'));
+                    let infoProduct = products.find(sp => sp.id == qtyInput.dataset.id);
+                    let price = infoProduct ? parseInt(infoProduct.price) : 0;
+                    let total = price * qty;
+                    priceDisplay.textContent = vnd(total);
+                }
+                qtyInput.addEventListener('input', updateDetailTotal);
+                qtyInput.addEventListener('change', updateDetailTotal);
+            }
+        }, 100);
 }
 
 //Open Search Mobile 
@@ -631,11 +760,11 @@ let signupbtn = document.getElementById('signup');
 let loginbtn = document.getElementById('login');
 let formsg = document.querySelector('.modal.signup-login')
 signupbtn.addEventListener('click', () => {
-    window.location.href = 'login.html';
+    window.location.href = 'login.html?tab=signup';
 })
 
 loginbtn.addEventListener('click', () => {
-    window.location.href = 'login.html';
+    window.location.href = 'login.html?tab=login';
 })
 
 // Dang nhap & Dang ky

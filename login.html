@@ -82,5 +82,16 @@
     </div>
 
     <script src="./js/login.js"></script>
+    <script>
+        // Kiểm tra URL param để set tab
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        if (tab === 'signup') {
+            document.getElementById('login-tab').classList.remove('active');
+            document.getElementById('signup-tab').classList.add('active');
+            // Trigger click để chuyển form
+            document.getElementById('signup-tab').click();
+        }
+    </script>
 </body>
 </html>

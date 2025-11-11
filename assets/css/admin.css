@@ -170,7 +170,7 @@ body,input,button,textarea,pre {
 }
 
 .menu-icon {
-    margin-left: 30px;
+    margin-left: 10px;
     background-color: #000;
     font-size: 30px;
     color: var(--yellow);
