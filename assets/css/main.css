@@ -2285,13 +2285,13 @@ input[type=number] {
 .order-history-status-sp.complete{
     background-color: #27ae60;
     color: var(--red);
-    padding-left: 35px;
+    padding-left: 15px;
 }
 
 .order-history-status-sp.complete::before{
-    content: "\f00c";
+    /* content: "\f00c"; */
     position: absolute;
-    left: 16px;
+    left: 2px;
     top: 50%;
     transform: translateY(-50%);
 }
@@ -2299,14 +2299,14 @@ input[type=number] {
 .order-history-status-sp.no-complete{
     background-color: #f04e2e;
     color: var(--red);
-    padding-left: 35px;
+    padding-left: 15px;
 }
 
 .order-history-status-sp.no-complete::before{
-    content: "\e1d4";
+    /* content: "\e1d4"; */
     font-family: "Font Awesome 6 Pro";
     position: absolute;
-    left: 16px;
+    left: 2px;
     top: 50%;
     transform: translateY(-50%);
 }

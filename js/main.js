@@ -1118,9 +1118,16 @@ function renderOrderProduct() {
                 </div>`;
             });
             // sửa icon giúp toi nhé
-            const iconCompl=item.trangthai == 1?'<i class="fa-solid fa-circle-check"></i>' : '<i class="fa-solid fa-spinner fa-spin"></i>';
-            let textCompl = item.trangthai == 1 ? "Đã xử lý" : "Đang xử lý";
-            let classCompl = item.trangthai == 1 ? "complete" : "no-complete"
+            let iconCompl = '';
+            if (item.trangthai == 1) {
+                iconCompl = '<i class="fa-solid fa-check-circle" style="color:#007bff"></i>';
+            } else if (item.trangthai == 2) {
+                iconCompl = '<i class="fa-solid fa-ban" style="color:#dc3545"></i>';
+            } else {
+                iconCompl = '<i class="fa-regular fa-clock" style="color:#ffc107"></i>';
+            }
+            let textCompl = item.trangthai == 1 ? "Đã xử lý" : (item.trangthai == 2 ? "Đã hủy" : "Đang xử lý");
+            let classCompl = item.trangthai == 1 ? "complete" : (item.trangthai == 2 ? "cancel" : "no-complete");
             productHtml += `<div class="order-history-control">
                 <div class="order-history-status">
                     <span class="order-history-status-sp ${classCompl}">${iconCompl} ${textCompl}</span>
