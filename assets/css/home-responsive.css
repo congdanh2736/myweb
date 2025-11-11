@@ -225,16 +225,6 @@
         min-width: 80px;
     }
 
-    .complete-checkout-btn {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: calc(100% - 40px);
-        z-index: 100;
-    }
-
-
     .home-service-item{
         width: 90%;
     }
